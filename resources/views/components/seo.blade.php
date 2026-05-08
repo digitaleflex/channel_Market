@@ -51,21 +51,22 @@
 <link rel="apple-touch-icon" sizes="180x180"     href="{{ asset('apple-touch-icon.png') }}">
 
 {{-- JSON-LD Structured Data --}}
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "{{ $siteName }}",
-    "url": "{{ $siteUrl }}",
-    "description": "{{ $description }}",
-    "inLanguage": "fr-FR",
-    "potentialAction": {
-        "@type": "SearchAction",
-        "target": {
-            "@type": "EntryPoint",
-            "urlTemplate": "{{ $siteUrl }}/?q={search_term_string}"
-        },
-        "query-input": "required name=search_term_string"
-    }
-}
-</script>
+@php
+$jsonLd = [
+    '@context' => 'https://schema.org',
+    '@type'    => 'WebSite',
+    'name'     => $siteName,
+    'url'      => $siteUrl,
+    'description' => $description,
+    'inLanguage'  => 'fr-FR',
+    'potentialAction' => [
+        '@type'       => 'SearchAction',
+        'target'      => [
+            '@type'       => 'EntryPoint',
+            'urlTemplate' => $siteUrl . '/?q={search_term_string}',
+        ],
+        'query-input' => 'required name=search_term_string',
+    ],
+];
+@endphp
+<script type="application/ld+json">{!! json_encode($jsonLd, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
