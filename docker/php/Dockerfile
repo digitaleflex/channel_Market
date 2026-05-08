@@ -29,6 +29,7 @@ RUN apt-get update && apt-get install -y \
     libicu-dev \
     libonig-dev \
     libfcgi-bin \
+    default-mysql-client \
     acl \
     netcat-traditional
 

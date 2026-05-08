@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'payment/moneroo/webhook',
         ]);
     })
+    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
+        $schedule->command('db:backup')->dailyAt('00:00');
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
