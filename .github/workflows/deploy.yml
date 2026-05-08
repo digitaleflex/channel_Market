@@ -80,10 +80,10 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
           -H "Content-Type: application/json" \
           -d '{
-            "from": "noreply@net.eurinhash.com",
+            "from": "noreply@channelmarket.net",
             "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com"],
             "subject": "✅ Déploiement RÉUSSI - Channel Market",
-            "html": "<h3>Félicitations !</h3><p>Le déploiement de <b>Channel Market</b> sur ton VPS s est déroulé avec succès.</p><p>Version : ${{ github.sha }}</p><p><a href=\"https://channelmarket.eurin.tech\">Accéder au site</a></p>"
+            "html": "<h3>Félicitations !</h3><p>Le déploiement de <b>Channel Market</b> sur ton VPS s est déroulé avec succès.</p><p>Version : ${{ github.sha }}</p><p><a href=\"https://channelmarket.net\">Accéder au site</a></p>"
           }'
 
     - name: Notification Échec (Email)
@@ -93,7 +93,7 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
           -H "Content-Type: application/json" \
           -d '{
-            "from": "noreply@net.eurinhash.com",
+            "from": "noreply@channelmarket.net",
             "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com"],
             "subject": "🚨 ERREUR de Déploiement - Channel Market",
             "html": "<h3>Attention !</h3><p>Le déploiement de <b>Channel Market</b> a échoué.</p><p>Veuillez vérifier les logs sur GitHub Actions immédiatement.</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions\">Voir les erreurs</a></p>"

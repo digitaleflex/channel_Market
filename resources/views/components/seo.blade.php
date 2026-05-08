@@ -1,33 +1,71 @@
 @props([
-    'title' => null,
-    'description' => 'Découvrez nos produits digitaux exclusifs. Qualité premium et téléchargement immédiat.',
-    'image' => asset('images/og-image.jpg'),
-    'url' => url()->current(),
-    'type' => 'website'
+    'title'       => null,
+    'description' => 'Découvrez nos produits digitaux exclusifs sur Channel Market. PDF, vidéos, musiques, formations — qualité premium et téléchargement immédiat.',
+    'image'       => asset('images/og-image.jpg'),
+    'url'         => url()->current(),
+    'type'        => 'website',
+    'keywords'    => 'produits digitaux, marketplace, téléchargement, PDF, formations, Channel Market',
+    'robots'      => 'index, follow',
 ])
 
 @php
-    $fullTitle = $title ? $title . ' - ' . config('app.name', 'DigitalStore') : config('app.name', 'DigitalStore');
+    $siteName = config('app.name', 'Channel Market');
+    $fullTitle = $title ? $title . ' — ' . $siteName : $siteName . ' | Marketplace de Produits Numériques';
+    $siteUrl   = config('app.url', 'https://channelmarket.net');
 @endphp
 
-<!-- Primary Meta Tags -->
+{{-- Primary Meta Tags --}}
 <title>{{ $fullTitle }}</title>
-<meta name="title" content="{{ $fullTitle }}">
+<meta name="title"       content="{{ $fullTitle }}">
 <meta name="description" content="{{ $description }}">
+<meta name="keywords"    content="{{ $keywords }}">
+<meta name="robots"      content="{{ $robots }}">
+<meta name="author"      content="{{ $siteName }}">
+<meta name="language"    content="fr">
 
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="{{ $type }}">
-<meta property="og:url" content="{{ $url }}">
-<meta property="og:title" content="{{ $fullTitle }}">
+{{-- Open Graph / Facebook --}}
+<meta property="og:type"        content="{{ $type }}">
+<meta property="og:site_name"   content="{{ $siteName }}">
+<meta property="og:locale"      content="fr_FR">
+<meta property="og:url"         content="{{ $url }}">
+<meta property="og:title"       content="{{ $fullTitle }}">
 <meta property="og:description" content="{{ $description }}">
-<meta property="og:image" content="{{ $image }}">
+<meta property="og:image"       content="{{ $image }}">
+<meta property="og:image:width"  content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt"    content="{{ $fullTitle }}">
 
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="{{ $url }}">
-<meta property="twitter:title" content="{{ $fullTitle }}">
-<meta property="twitter:description" content="{{ $description }}">
-<meta property="twitter:image" content="{{ $image }}">
+{{-- Twitter Card --}}
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:site"        content="@channelmarket">
+<meta name="twitter:url"         content="{{ $url }}">
+<meta name="twitter:title"       content="{{ $fullTitle }}">
+<meta name="twitter:description" content="{{ $description }}">
+<meta name="twitter:image"       content="{{ $image }}">
 
-<!-- Canonical Link -->
+{{-- Canonical --}}
 <link rel="canonical" href="{{ $url }}">
+
+{{-- Favicon --}}
+<link rel="icon"             type="image/x-icon" href="{{ asset('favicon.ico') }}">
+<link rel="apple-touch-icon" sizes="180x180"     href="{{ asset('apple-touch-icon.png') }}">
+
+{{-- JSON-LD Structured Data --}}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "{{ $siteName }}",
+    "url": "{{ $siteUrl }}",
+    "description": "{{ $description }}",
+    "inLanguage": "fr-FR",
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "{{ $siteUrl }}/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>

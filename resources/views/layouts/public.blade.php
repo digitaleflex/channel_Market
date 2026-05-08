@@ -31,7 +31,7 @@
                         <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </div>
-                        <span class="text-2xl font-black tracking-tighter gradient-text">Chanel Market</span>
+                        <span class="text-2xl font-black tracking-tighter gradient-text">Channel Market</span>
                     </a>
                 </div>
 
@@ -88,7 +88,7 @@
                     <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-200">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     </div>
-                    <span class="text-xl font-black tracking-tighter text-slate-900">Chanel Market</span>
+                    <span class="text-xl font-black tracking-tighter text-slate-900">Channel Market</span>
                 </a>
                 <button @click="mobileMenuOpen = false" class="w-12 h-12 flex items-center justify-center rounded-xl bg-slate-50 text-slate-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -113,7 +113,7 @@
             </div>
 
             <div class="pt-8 border-t border-slate-100">
-                <p class="text-slate-400 text-sm font-medium">&copy; {{ date('Y') }} DigiStore. Tous droits réservés.</p>
+                <p class="text-slate-400 text-sm font-medium">&copy; {{ date('Y') }} Channel Market. Tous droits réservés.</p>
             </div>
         </div>
     </div>
@@ -142,7 +142,7 @@
                         <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center shadow-lg shadow-slate-200">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </div>
-                        <span class="text-2xl font-black tracking-tighter text-slate-900">Chanel Market</span>
+                        <span class="text-2xl font-black tracking-tighter text-slate-900">Channel Market</span>
                     </a>
                     <p class="text-slate-500 max-w-sm leading-relaxed mb-10 text-lg font-medium">
                         La plateforme numéro un pour vos produits digitaux premium. Accédez à des ressources exclusives instantanément.
@@ -177,7 +177,7 @@
             </div>
             
             <div class="mt-20 pt-10 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
-                <p class="text-slate-400 text-sm font-bold tracking-tight">&copy; {{ date('Y') }} Chanel Market. Built with Excellence.</p>
+                <p class="text-slate-400 text-sm font-bold tracking-tight">&copy; {{ date('Y') }} Channel Market. Built with Excellence.</p>
                 <div class="flex items-center gap-8">
                     <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Secured by Moneroo</span>
                     <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Premium Marketplace</span>
