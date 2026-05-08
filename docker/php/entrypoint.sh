@@ -10,10 +10,10 @@ if [ "$DB_CONNECTION" = "mysql" ]; then
     echo "Database is up!"
 fi
 
-# Install dependencies if vendor is missing
-if [ ! -d "vendor" ]; then
+# Install dependencies if autoload is missing
+if [ ! -f "vendor/autoload.php" ]; then
     echo "Installing composer dependencies..."
-    composer install --no-interaction --optimize-autoloader --no-dev
+    composer install --no-interaction --optimize-autoloader
 fi
 
 # Set permissions
