@@ -3,21 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadController extends Controller
 {
     /**
-     * Download the digital product if order is paid (token-based).
+     * Secure download via signed URL.
      */
-    public function downloadByToken(string $token)
+    public function downloadByToken(Request $request, string $token)
     {
-        $order = Order::where('download_token', $token)->firstOrFail();
-
-        // Security logic: check if order is paid
-        if ($order->status !== 'success') {
-            abort(403, 'Paiement non valide ou en attente');
+        // 1. Verify the signature (Pentest best practice)
+        if (! $request->hasValidSignature()) {
+            abort(403, 'Ce lien de téléchargement a expiré ou est invalide.');
         }
+
+        $order = Order::where('download_token', $token)
+            ->where('status', 'success')
+            ->firstOrFail();
 
         // Expiration logic: link expires after 48 hours
         $expirationHours = 48;

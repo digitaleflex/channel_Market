@@ -33,7 +33,9 @@ Route::get('/product/{product}', [ProductController::class, 'show'])->name('prod
 
 // Checkout & Payment (Public - No login required)
 Route::get('/checkout/{product}', [PaymentController::class, 'checkout'])->name('checkout');
-Route::post('/checkout/{product}', [PaymentController::class, 'initMoneroo'])->name('checkout.init');
+Route::post('/checkout/{product}', [PaymentController::class, 'initMoneroo'])
+    ->middleware('throttle:10,1')
+    ->name('checkout.init');
 
 // Authenticated Routes (Login required)
 Route::middleware('auth')->group(function () {
@@ -66,7 +68,9 @@ Route::post('/payment/moneroo/webhook', [PaymentController::class, 'monerooWebho
 Route::get('/payment/success/{order}', [PaymentController::class, 'success'])->name('payment.success');
 
 // Secure download via token
-Route::get('/download/{token}', [DownloadController::class, 'downloadByToken'])->name('download');
+Route::get('/download/{token}', [DownloadController::class, 'downloadByToken'])
+    ->middleware('throttle:30,1')
+    ->name('download');
 
 // Admin Routes (protect via middleware 'admin')
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
