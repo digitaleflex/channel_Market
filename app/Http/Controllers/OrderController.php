@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
@@ -28,6 +27,7 @@ class OrderController extends Controller
     public function adminIndex()
     {
         $orders = Order::with(['user', 'product'])->latest()->paginate(20);
+
         return view('admin.orders.index', compact('orders'));
     }
 }

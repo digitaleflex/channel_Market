@@ -64,11 +64,12 @@ class PaymentController extends Controller
                 ],
             ];
 
-            $monerooPayment = new MonerooPayment();
+            $monerooPayment = new MonerooPayment;
             $payment = $monerooPayment->init($paymentData);
 
-            if (!isset($payment->id, $payment->checkout_url)) {
+            if (! isset($payment->id, $payment->checkout_url)) {
                 Log::warning('Moneroo init: unexpected response', ['payment' => $payment]);
+
                 return redirect()
                     ->route('checkout', $product)
                     ->with('error', "Impossible d'initialiser le paiement. Réessayez.");
@@ -85,7 +86,7 @@ class PaymentController extends Controller
 
             return redirect()
                 ->route('checkout', $product)
-                ->with('error', "Erreur lors de l'initialisation du paiement : " . $e->getMessage());
+                ->with('error', "Erreur lors de l'initialisation du paiement : ".$e->getMessage());
         }
     }
 
@@ -97,7 +98,7 @@ class PaymentController extends Controller
         $paymentId = $request->query('paymentId');
         $paymentStatus = $request->query('paymentStatus');
 
-        if (!$paymentId) {
+        if (! $paymentId) {
             return redirect()
                 ->route('products.show', $order->product_id)
                 ->with('error', 'Retour paiement invalide.');
@@ -114,7 +115,7 @@ class PaymentController extends Controller
         }
 
         try {
-            $monerooPayment = new MonerooPayment();
+            $monerooPayment = new MonerooPayment;
             $payment = $monerooPayment->verify($paymentId);
 
             $status = $payment->status ?? null;
@@ -165,30 +166,31 @@ class PaymentController extends Controller
 
         if ($secret === '' || $signature === '') {
             Log::warning('Moneroo webhook: Missing secret or signature');
+
             return response()->json(['error' => 'Webhook not configured'], 400);
         }
 
         $computed = hash_hmac('sha256', $payload, $secret);
-        if (!hash_equals($computed, $signature)) {
+        if (! hash_equals($computed, $signature)) {
             Log::error('Moneroo webhook: Invalid signature', [
                 'received' => $signature,
                 'computed' => $computed,
-                'payload_sample' => substr($payload, 0, 100)
+                'payload_sample' => substr($payload, 0, 100),
             ]);
+
             return response()->json(['error' => 'Invalid signature'], 403);
         }
 
         $event = $request->input('event');
         $paymentId = $request->input('data.id');
 
-
-        if (!$paymentId) {
+        if (! $paymentId) {
             return response()->json(['error' => 'Missing payment id'], 422);
         }
 
         // We always re-query Moneroo to avoid trusting the webhook payload fully.
         try {
-            $monerooPayment = new MonerooPayment();
+            $monerooPayment = new MonerooPayment;
             $payment = $monerooPayment->verify($paymentId);
             $status = $payment->status ?? null;
             $amount = $payment->amount ?? null;
@@ -197,8 +199,9 @@ class PaymentController extends Controller
             $orderId = is_object($metadata) ? ($metadata->order_id ?? null) : null;
             $order = $orderId ? Order::find($orderId) : Order::where('transaction_id', $paymentId)->first();
 
-            if (!$order) {
+            if (! $order) {
                 Log::warning('Moneroo webhook: order not found', ['paymentId' => $paymentId, 'event' => $event]);
+
                 return response()->json(['ok' => true], 200);
             }
 
@@ -211,6 +214,7 @@ class PaymentController extends Controller
             return response()->json(['ok' => true], 200);
         } catch (\Throwable $e) {
             Log::error('Moneroo webhook verify failed', ['paymentId' => $paymentId, 'message' => $e->getMessage()]);
+
             return response()->json(['ok' => true], 200);
         }
     }

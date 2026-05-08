@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class DownloadController extends Controller
@@ -27,13 +26,13 @@ class DownloadController extends Controller
         }
 
         $product = $order->product;
-        
+
         // Handle external links (like Google Drive)
         if (filter_var($product->file_path, FILTER_VALIDATE_URL)) {
             return redirect()->away($product->file_path);
         }
 
-        if (!$product || !Storage::exists($product->file_path)) {
+        if (! $product || ! Storage::exists($product->file_path)) {
             abort(404, 'Fichier indisponible');
         }
 

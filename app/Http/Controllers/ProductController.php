@@ -14,6 +14,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::latest()->get();
+
         return view('products.index', compact('products'));
     }
 
@@ -31,6 +32,7 @@ class ProductController extends Controller
     public function adminIndex()
     {
         $products = Product::latest()->paginate(10);
+
         return view('admin.products.index', compact('products'));
     }
 
@@ -63,7 +65,7 @@ class ProductController extends Controller
         } else {
             $filePath = $validated['drive_link'];
         }
-        
+
         $imagePath = $request->file('image_file')->store('products', 'public');
 
         Product::create([
@@ -104,14 +106,14 @@ class ProductController extends Controller
         if ($validated['product_type'] === 'file') {
             if ($request->hasFile('file')) {
                 // Delete old file if it was a local file
-                if ($product->file_path && !filter_var($product->file_path, FILTER_VALIDATE_URL)) {
+                if ($product->file_path && ! filter_var($product->file_path, FILTER_VALIDATE_URL)) {
                     Storage::delete($product->file_path);
                 }
                 $product->file_path = $request->file('file')->store('digital_products');
             }
         } else {
             // It's a link
-            if ($product->file_path && !filter_var($product->file_path, FILTER_VALIDATE_URL)) {
+            if ($product->file_path && ! filter_var($product->file_path, FILTER_VALIDATE_URL)) {
                 Storage::delete($product->file_path);
             }
             $product->file_path = $validated['drive_link'];
@@ -128,7 +130,7 @@ class ProductController extends Controller
         $product->title = $validated['title'];
         $product->description = $validated['description'];
         $product->price = $validated['price'];
-        
+
         $product->save();
 
         return redirect()->route('admin.products.index')->with('success', 'Produit mis à jour avec succès !');

@@ -14,12 +14,12 @@ class SettingController extends Controller
     {
         // Get all settings and transform them into an associative array
         $settings = Setting::all()->pluck('value', 'key')->toArray();
-        
+
         // Fallback to env if database is empty for these specific keys
-        if (!isset($settings['META_PIXEL_ID'])) {
+        if (! isset($settings['META_PIXEL_ID'])) {
             $settings['META_PIXEL_ID'] = env('META_PIXEL_ID');
         }
-        if (!isset($settings['GOOGLE_ANALYTICS_ID'])) {
+        if (! isset($settings['GOOGLE_ANALYTICS_ID'])) {
             $settings['GOOGLE_ANALYTICS_ID'] = env('GOOGLE_ANALYTICS_ID');
         }
 

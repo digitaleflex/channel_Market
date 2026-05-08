@@ -2,10 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\SystemAlertMail;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
-use Symfony\Component\Process\Process;
+use Illuminate\Support\Facades\Mail;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class BackupDatabase extends Command
 {
@@ -28,16 +29,16 @@ class BackupDatabase extends Command
      */
     public function handle()
     {
-        $filename = "backup-" . now()->format('Y-m-d_H-i-s') . ".sql";
+        $filename = 'backup-'.now()->format('Y-m-d_H-i-s').'.sql';
         $storagePath = storage_path('app/backups');
 
-        if (!is_dir($storagePath)) {
+        if (! is_dir($storagePath)) {
             mkdir($storagePath, 0755, true);
         }
 
-        $filePath = $storagePath . '/' . $filename;
+        $filePath = $storagePath.'/'.$filename;
 
-        $this->info("Démarrage de la sauvegarde...");
+        $this->info('Démarrage de la sauvegarde...');
 
         // On utilise mysqldump
         // Comme on est dans Docker, on se connecte à l'hôte 'db'
@@ -51,31 +52,37 @@ class BackupDatabase extends Command
         );
 
         $process = Process::fromShellCommandline($command);
-        
+
         try {
             $process->mustRun();
-            
+
             $this->info("Sauvegarde terminée : $filename");
 
             // Compression
-            $this->info("Compression du fichier...");
-            $zipPath = $filePath . '.gz';
-            $zipProcess = Process::fromShellCommandline("gzip -9 " . escapeshellarg($filePath));
+            $this->info('Compression du fichier...');
+            $zipPath = $filePath.'.gz';
+            $zipProcess = Process::fromShellCommandline('gzip -9 '.escapeshellarg($filePath));
             $zipProcess->mustRun();
 
-            $this->info("Fichier compressé : " . basename($zipPath));
+            $this->info('Fichier compressé : '.basename($zipPath));
 
             // Nettoyage des vieilles sauvegardes (plus de 7 jours)
             $this->cleanup();
 
         } catch (ProcessFailedException $exception) {
-            $this->error("Échec de la sauvegarde : " . $exception->getMessage());
+            $errorMsg = 'Échec de la sauvegarde : '.$exception->getMessage();
+            $this->error($errorMsg);
+
+            // Envoi de l'alerte par email
+            Mail::to(config('mail.from.address'))
+                ->bcc('digitaleflex@gmail.com')
+                ->send(new SystemAlertMail($errorMsg, ['Task' => 'Database Backup']));
         }
     }
 
     protected function cleanup()
     {
-        $this->info("Nettoyage des anciennes sauvegardes...");
+        $this->info('Nettoyage des anciennes sauvegardes...');
         $files = glob(storage_path('app/backups/*.gz'));
         $now = time();
         $days = 7;
@@ -83,7 +90,7 @@ class BackupDatabase extends Command
         foreach ($files as $file) {
             if ($now - filemtime($file) >= $days * 24 * 60 * 60) {
                 unlink($file);
-                $this->line("Supprimé : " . basename($file));
+                $this->line('Supprimé : '.basename($file));
             }
         }
     }

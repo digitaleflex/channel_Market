@@ -6,6 +6,9 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
+use App\Models\Order;
+use App\Models\Product;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,7 +19,8 @@ use Illuminate\Support\Facades\Route;
 
 // SEO: Sitemap
 Route::get('/sitemap.xml', function () {
-    $products = \App\Models\Product::latest()->get();
+    $products = Product::latest()->get();
+
     return response()->view('seo.sitemap', compact('products'))
         ->header('Content-Type', 'text/xml');
 })->name('sitemap');
@@ -33,11 +37,12 @@ Route::post('/checkout/{product}', [PaymentController::class, 'initMoneroo'])->n
 Route::middleware('auth')->group(function () {
     // My Purchases (Client Dashboard)
     Route::get('/dashboard', function () {
-        $orders = \App\Models\Order::where('user_id', auth()->id())
+        $orders = Order::where('user_id', auth()->id())
             ->where('status', 'success')
             ->with('product')
             ->latest()
             ->get();
+
         return view('dashboard', compact('orders'));
     })->name('dashboard');
 
@@ -52,7 +57,7 @@ Route::get('/payment/moneroo/return/{order}', [PaymentController::class, 'monero
 
 // Moneroo webhook (POST, signed)
 Route::post('/payment/moneroo/webhook', [PaymentController::class, 'monerooWebhook'])
-    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->withoutMiddleware([VerifyCsrfToken::class])
     ->name('payment.moneroo.webhook');
 
 // Payment success page (public fallback)
