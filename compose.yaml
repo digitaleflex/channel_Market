@@ -21,6 +21,14 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
+            - proxy
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.channelmarket.rule=Host(`channelmarket.eurin.tech`)"
+            - "traefik.http.routers.channelmarket.entrypoints=websecure"
+            - "traefik.http.routers.channelmarket.tls.certresolver=letsencrypt"
+            - "traefik.http.services.channelmarket.loadbalancer.server.port=80"
+            - "traefik.docker.network=proxy"
         depends_on:
             - mysql
             - redis
@@ -75,6 +83,8 @@ services:
 networks:
     sail:
         driver: bridge
+    proxy:
+        external: true
 volumes:
     sail-mysql:
         driver: local
