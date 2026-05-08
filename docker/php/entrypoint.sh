@@ -16,11 +16,16 @@ if [ ! -f "vendor/autoload.php" ]; then
     composer install --no-interaction --optimize-autoloader
 fi
 
-# Set permissions
-echo "Setting permissions..."
+# Set permissions and prepare internal cache
+echo "Setting permissions and preparing internal cache..."
+mkdir -p /tmp/laravel_views
 mkdir -p storage/framework/{sessions,views,cache}
 mkdir -p storage/logs
 mkdir -p bootstrap/cache
+
+# Force rights (Crucial for Linux Production)
+chmod -R 777 /tmp/laravel_views storage bootstrap/cache
+chown -R www-data:www-data /tmp/laravel_views storage bootstrap/cache
 
 # Run migrations if enabled
 if [ "$RUN_MIGRATIONS" = "true" ]; then
