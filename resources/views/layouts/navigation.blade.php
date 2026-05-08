@@ -17,6 +17,10 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.index')" class="text-sm font-bold">
+                        {{ __('Boutique') }}
+                    </x-nav-link>
+
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-sm font-bold">
                         {{ __('Mes Achats') }}
                     </x-nav-link>
@@ -82,6 +86,10 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden border-t border-slate-100 bg-white">
         <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.index')" class="font-bold">
+                {{ __('Boutique') }}
+            </x-responsive-nav-link>
+
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="font-bold">
                 {{ __('Mes Achats') }}
             </x-responsive-nav-link>
