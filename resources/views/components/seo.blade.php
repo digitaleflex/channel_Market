@@ -37,7 +37,7 @@
 
 {{-- Twitter Card --}}
 <meta name="twitter:card"        content="summary_large_image">
-<meta name="twitter:site"        content="@channelmarket">
+<meta name="twitter:site"        content="@@channelmarket">
 <meta name="twitter:url"         content="{{ $url }}">
 <meta name="twitter:title"       content="{{ $fullTitle }}">
 <meta name="twitter:description" content="{{ $description }}">
