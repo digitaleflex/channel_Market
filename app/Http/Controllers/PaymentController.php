@@ -28,7 +28,7 @@ class PaymentController extends Controller
             'email' => ['required', 'email'],
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
-            'phone' => ['nullable', 'string', 'max:30'],
+            'phone' => ['required', 'string', 'max:30'],
         ]);
 
         // Sanitize phone: keep only digits as Moneroo is strict
@@ -39,6 +39,8 @@ class PaymentController extends Controller
         $order = Order::create([
             'user_id' => auth()->id(),
             'client_email' => $validated['email'],
+            'client_name' => $validated['first_name'] . ' ' . $validated['last_name'],
+            'client_phone' => $validated['phone'],
             'product_id' => $product->id,
             'amount' => $amount,
             'status' => 'pending',

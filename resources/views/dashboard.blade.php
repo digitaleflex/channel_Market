@@ -28,7 +28,7 @@
                 <div class="flex items-center justify-between mb-10">
                     <h3 class="text-2xl font-black text-slate-900 tracking-tight">Mes Produits Numériques</h3>
                     @if(isset($orders) && $orders->count() > 0)
-                        <span class="px-4 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest border border-indigo-100">
+                        <span class="px-4 py-1.5 rounded-full bg-amber-50 text-amber-600 text-[10px] font-black uppercase tracking-widest border border-amber-100">
                             {{ $orders->count() }} {{ $orders->count() > 1 ? 'Produits' : 'Produit' }}
                         </span>
                     @endif
@@ -41,13 +41,13 @@
                             <div class="card-premium group">
                                 <div class="p-6">
                                     <div class="flex items-center gap-2 mb-4">
-                                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-500">
+                                        <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors duration-500">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                                         </div>
                                         <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Digital Asset</span>
                                     </div>
 
-                                    <h4 class="font-black text-lg text-slate-900 mb-2 truncate group-hover:text-indigo-600 transition-colors" title="{{ $order->product->title }}">
+                                    <h4 class="font-black text-lg text-slate-900 mb-2 truncate group-hover:text-amber-600 transition-colors" title="{{ $order->product->title }}">
                                         {{ $order->product->title }}
                                     </h4>
                                     <p class="text-sm text-slate-400 font-bold mb-8 flex items-center gap-2">

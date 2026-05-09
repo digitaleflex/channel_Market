@@ -49,7 +49,7 @@
 
 <div class="container-app py-12 md:py-20">
     <div class="mb-12">
-        <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold transition-colors group">
+        <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 text-slate-500 hover:text-amber-600 font-bold transition-colors group">
             <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             Retour au catalogue
         </a>
@@ -59,7 +59,7 @@
         <!-- Left: Product Image -->
         <div class="lg:col-span-7">
             <div class="relative group">
-                <div class="absolute -inset-4 bg-indigo-500/5 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                <div class="absolute -inset-4 bg-amber-500/5 rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
                 <div class="relative bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-2xl shadow-slate-200/50">
                     @if($product->image)
                         <img src="{{ filter_var($product->image, FILTER_VALIDATE_URL) ? $product->image : asset('storage/' . $product->image) }}" 
@@ -97,7 +97,7 @@
                 </h1>
 
                 <div class="flex items-baseline gap-2 mb-10">
-                    <span class="text-5xl font-black text-indigo-600 tracking-tighter">{{ number_format($product->price, 0, ',', ' ') }}</span>
+                    <span class="text-5xl font-black text-amber-600 tracking-tighter">{{ number_format($product->price, 0, ',', ' ') }}</span>
                     <span class="text-xl font-bold text-slate-400 tracking-widest">FCFA</span>
                 </div>
 
@@ -116,7 +116,7 @@
                 <!-- Trust Points -->
                 <div class="border-t border-slate-100 pt-8 space-y-6">
                     <div class="flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 shrink-0">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         </div>
                         <div>
@@ -126,7 +126,7 @@
                     </div>
 
                     <div class="flex items-start gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0">
+                        <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600 shrink-0">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </div>
                         <div>
@@ -137,7 +137,7 @@
                 </div>
 
                 <div class="mt-10 pt-8 border-t border-slate-100 text-center">
-                    <a href="{{ url('/dashboard') }}" class="text-xs font-bold text-slate-400 hover:text-indigo-600 transition-colors underline underline-offset-8">
+                    <a href="{{ url('/dashboard') }}" class="text-xs font-bold text-slate-400 hover:text-amber-600 transition-colors underline underline-offset-8">
                         Consulter mon historique d'achats
                     </a>
                 </div>

@@ -26,7 +26,7 @@
 @endpush
 <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
     <div class="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-gray-100 text-center relative overflow-hidden">
-        <div class="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full blur-2xl opacity-50"></div>
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br from-amber-100 to-orange-100 rounded-full blur-2xl opacity-50"></div>
         <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-gradient-to-tr from-green-100 to-teal-100 rounded-full blur-2xl opacity-50"></div>
 
         <div class="relative z-10">
@@ -45,7 +45,7 @@
                 <div class="w-full h-px bg-gray-200 mb-4"></div>
                 <div class="flex justify-between items-center">
                     <span class="text-gray-900 font-bold text-lg">Total à payer</span>
-                    <span class="text-indigo-600 font-black text-2xl">{{ number_format($product->price, 0, '', '') }} CFA</span>
+                    <span class="text-amber-600 font-black text-2xl">{{ number_format($product->price, 0, '', '') }} CFA</span>
                 </div>
             </div>
 
@@ -62,7 +62,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Prénom</label>
                         <input name="first_name" value="{{ old('first_name') }}" required
-                               class="w-full rounded-xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                               class="w-full rounded-xl border-gray-200 focus:border-amber-500 focus:ring-amber-500" />
                         @error('first_name')
                             <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                         @enderror
@@ -70,7 +70,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Nom</label>
                         <input name="last_name" value="{{ old('last_name') }}" required
-                               class="w-full rounded-xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                               class="w-full rounded-xl border-gray-200 focus:border-amber-500 focus:ring-amber-500" />
                         @error('last_name')
                             <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                         @enderror
@@ -80,23 +80,23 @@
                 <div class="mt-4">
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
                     <input type="email" name="email" value="{{ old('email') }}" required
-                           class="w-full rounded-xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                           class="w-full rounded-xl border-gray-200 focus:border-amber-500 focus:ring-amber-500" />
                     @error('email')
                         <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div class="mt-4">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Téléphone (optionnel)</label>
-                    <input name="phone" value="{{ old('phone') }}"
-                           class="w-full rounded-xl border-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Numéro WhatsApp (Obligatoire)</label>
+                    <input name="phone" value="{{ old('phone') }}" required placeholder="Ex: +229 01020304"
+                           class="w-full rounded-xl border-gray-200 focus:border-amber-500 focus:ring-amber-500" />
                     @error('phone')
                         <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <button type="submit"
-                        class="mt-6 inline-flex items-center justify-center w-full px-6 py-3 bg-indigo-600 text-white font-semibold rounded-2xl hover:bg-indigo-700 transition shadow-md hover:shadow-lg">
+                        class="mt-6 inline-flex items-center justify-center w-full px-6 py-3 bg-amber-600 text-white font-semibold rounded-2xl hover:bg-amber-700 transition shadow-md hover:shadow-lg">
                     Procéder au paiement
                 </button>
             </form>

@@ -16,6 +16,13 @@ export default {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
                 display: ['Outfit', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                brand: {
+                    primary: '#f59e0b',
+                    secondary: '#111827',
+                    accent: '#f97316',
+                }
+            }
         },
     },
 

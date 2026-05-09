@@ -19,8 +19,8 @@
 <body class="flex flex-col min-h-screen selection:bg-indigo-500 selection:text-white bg-slate-50 overflow-x-hidden" x-data="{ mobileMenuOpen: false }">
     <!-- Decorative Blobs -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div class="blur-blob w-[600px] h-[600px] bg-indigo-200/40 top-[-300px] left-[-150px]"></div>
-        <div class="blur-blob w-[500px] h-[500px] bg-purple-200/40 bottom-[-150px] right-[-150px] animation-delay-2000"></div>
+        <div class="blur-blob w-[600px] h-[600px] bg-amber-200/40 top-[-300px] left-[-150px]"></div>
+        <div class="blur-blob w-[500px] h-[500px] bg-orange-200/40 bottom-[-150px] right-[-150px] animation-delay-2000"></div>
     </div>
 
     <nav id="main-nav" class="fixed w-full z-50 top-0 transition-all duration-500">
@@ -28,8 +28,8 @@
             <div class="flex justify-between h-24 items-center nav-container transition-all duration-500">
                 <div class="flex items-center">
                     <a href="{{ route('products.index') }}" class="flex items-center gap-3 group">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <div class="w-12 h-12 rounded-xl overflow-hidden shadow-lg shadow-amber-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                            <img src="{{ asset('img/logo.jpg') }}" alt="Channel Market" class="w-full h-full object-cover">
                         </div>
                         <span class="text-2xl font-black tracking-tighter gradient-text">Channel Market</span>
                     </a>
@@ -85,8 +85,8 @@
         <div class="p-6 flex flex-col h-full">
             <div class="flex justify-between items-center mb-12">
                 <a href="{{ route('products.index') }}" class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-200">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-amber-200">
+                        <img src="{{ asset('img/logo.jpg') }}" alt="Channel Market" class="w-full h-full object-cover">
                     </div>
                     <span class="text-xl font-black tracking-tighter text-slate-900">Channel Market</span>
                 </a>
@@ -139,8 +139,8 @@
             <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
                 <div class="md:col-span-5">
                     <a href="#" class="flex items-center gap-3 mb-8">
-                        <div class="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center shadow-lg shadow-slate-200">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <div class="w-12 h-12 rounded-xl overflow-hidden shadow-lg shadow-slate-200">
+                            <img src="{{ asset('img/logo.jpg') }}" alt="Channel Market" class="w-full h-full object-cover">
                         </div>
                         <span class="text-2xl font-black tracking-tighter text-slate-900">Channel Market</span>
                     </a>
@@ -160,18 +160,18 @@
                 <div class="md:col-span-2 md:col-start-8">
                     <h4 class="font-black text-slate-900 mb-8 uppercase text-xs tracking-[0.2em]">Navigation</h4>
                     <ul class="space-y-4">
-                        <li><a href="{{ route('products.index') }}" class="text-slate-500 hover:text-indigo-600 transition-colors text-sm font-bold">Boutique</a></li>
-                        <li><a href="{{ url('/dashboard') }}" class="text-slate-500 hover:text-indigo-600 transition-colors text-sm font-bold">Mes achats</a></li>
-                        <li><a href="{{ route('login') }}" class="text-slate-500 hover:text-indigo-600 transition-colors text-sm font-bold">Connexion</a></li>
+                        <li><a href="{{ route('products.index') }}" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Boutique</a></li>
+                        <li><a href="{{ url('/dashboard') }}" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Mes achats</a></li>
+                        <li><a href="{{ route('login') }}" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Connexion</a></li>
                     </ul>
                 </div>
 
                 <div class="md:col-span-3">
                     <h4 class="font-black text-slate-900 mb-8 uppercase text-xs tracking-[0.2em]">Support</h4>
                     <ul class="space-y-4">
-                        <li><a href="#" class="text-slate-500 hover:text-indigo-600 transition-colors text-sm font-bold">Centre d'aide</a></li>
-                        <li><a href="#" class="text-slate-500 hover:text-indigo-600 transition-colors text-sm font-bold">Contact WhatsApp</a></li>
-                        <li><a href="#" class="text-slate-500 hover:text-indigo-600 transition-colors text-sm font-bold">Politique de remboursement</a></li>
+                        <li><a href="#" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Centre d'aide</a></li>
+                        <li><a href="#" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Contact WhatsApp</a></li>
+                        <li><a href="#" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Politique de remboursement</a></li>
                     </ul>
                 </div>
             </div>
