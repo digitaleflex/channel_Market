@@ -85,21 +85,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
-
-    // Diagnostics route
-    Route::get('/diagnostics', function () {
-        return [
-            'app_url' => config('app.url'),
-            'env' => config('app.env'),
-            'storage_link' => file_exists(public_path('storage')),
-            'storage_path_writable' => is_writable(storage_path('app/public')),
-            'public_path' => public_path(),
-            'storage_path' => storage_path(),
-            'php_version' => PHP_VERSION,
-            'upload_max_filesize' => ini_get('upload_max_filesize'),
-            'post_max_size' => ini_get('post_max_size'),
-        ];
-    })->name('diagnostics');
 });
 
 require __DIR__.'/auth.php';

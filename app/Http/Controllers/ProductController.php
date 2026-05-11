@@ -59,33 +59,24 @@ class ProductController extends Controller
             'image_file' => 'required|image|max:2048',
         ]);
 
-        try {
-            $filePath = null;
-            if ($validated['product_type'] === 'file' && $request->hasFile('file')) {
-                $filePath = $request->file('file')->store('digital_products', 'local');
-            } else {
-                $filePath = $validated['drive_link'];
-            }
-
-            if (! $request->hasFile('image_file')) {
-                return redirect()->back()->withErrors(['image_file' => 'L\'image de présentation est requise.'])->withInput();
-            }
-
-            $imagePath = $request->file('image_file')->store('products', 'public');
-
-            Product::create([
-                'title' => $validated['title'],
-                'description' => $validated['description'],
-                'price' => $validated['price'],
-                'file_path' => $filePath,
-                'image' => $imagePath,
-            ]);
-
-            return redirect()->route('admin.products.index')->with('success', 'Produit créé avec succès !');
-        } catch (\Exception $e) {
-            \Log::error('Erreur lors de la création du produit : ' . $e->getMessage());
-            return redirect()->back()->withErrors(['error' => 'Une erreur est survenue lors de l\'upload : ' . $e->getMessage()])->withInput();
+        $filePath = null;
+        if ($validated['product_type'] === 'file' && $request->hasFile('file')) {
+            $filePath = $request->file('file')->store('digital_products', 'local');
+        } else {
+            $filePath = $validated['drive_link'];
         }
+
+        $imagePath = $request->file('image_file')->store('products', 'public');
+
+        Product::create([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'price' => $validated['price'],
+            'file_path' => $filePath,
+            'image' => $imagePath,
+        ]);
+
+        return redirect()->route('admin.products.index')->with('success', 'Produit créé avec succès !');
     }
 
     /**
@@ -111,43 +102,38 @@ class ProductController extends Controller
             'image_file' => 'nullable|image|max:2048',
         ]);
 
-        try {
-            // Handle digital product file/link
-            if ($validated['product_type'] === 'file') {
-                if ($request->hasFile('file')) {
-                    // Delete old file if it was a local file
-                    if ($product->file_path && ! filter_var($product->file_path, FILTER_VALIDATE_URL)) {
-                        Storage::disk('local')->delete($product->file_path);
-                    }
-                    $product->file_path = $request->file('file')->store('digital_products', 'local');
-                }
-            } else {
-                // It's a link
+        // Handle digital product file/link
+        if ($validated['product_type'] === 'file') {
+            if ($request->hasFile('file')) {
+                // Delete old file if it was a local file
                 if ($product->file_path && ! filter_var($product->file_path, FILTER_VALIDATE_URL)) {
                     Storage::disk('local')->delete($product->file_path);
                 }
-                $product->file_path = $validated['drive_link'];
+                $product->file_path = $request->file('file')->store('digital_products', 'local');
             }
-
-            // Handle image
-            if ($request->hasFile('image_file')) {
-                if ($product->image) {
-                    Storage::disk('public')->delete($product->image);
-                }
-                $product->image = $request->file('image_file')->store('products', 'public');
+        } else {
+            // It's a link
+            if ($product->file_path && ! filter_var($product->file_path, FILTER_VALIDATE_URL)) {
+                Storage::disk('local')->delete($product->file_path);
             }
-
-            $product->title = $validated['title'];
-            $product->description = $validated['description'];
-            $product->price = $validated['price'];
-
-            $product->save();
-
-            return redirect()->route('admin.products.index')->with('success', 'Produit mis à jour avec succès !');
-        } catch (\Exception $e) {
-            \Log::error('Erreur lors de la mise à jour du produit : ' . $e->getMessage());
-            return redirect()->back()->withErrors(['error' => 'Une erreur est survenue lors de la mise à jour : ' . $e->getMessage()])->withInput();
+            $product->file_path = $validated['drive_link'];
         }
+
+        // Handle image
+        if ($request->hasFile('image_file')) {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $product->image = $request->file('image_file')->store('products', 'public');
+        }
+
+        $product->title = $validated['title'];
+        $product->description = $validated['description'];
+        $product->price = $validated['price'];
+
+        $product->save();
+
+        return redirect()->route('admin.products.index')->with('success', 'Produit mis à jour avec succès !');
     }
 
     /**
