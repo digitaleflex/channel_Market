@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
     libfcgi-bin \
     default-mysql-client \
     acl \
+    procps \
     netcat-traditional
 
 # Clear cache
