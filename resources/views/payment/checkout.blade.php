@@ -8,8 +8,7 @@
                 content_name: '{{ $product->title }}',
                 content_ids: ['{{ $product->id }}'],
                 content_type: 'product',
-                value: {{ $product->price }},
-                currency: 'XOF'
+                currency: '{{ $product->currency ?? 'XOF' }}'
             });
         }
         if (typeof gtag === 'function') {
@@ -18,7 +17,7 @@
                     item_id: '{{ $product->id }}',
                     item_name: '{{ $product->title }}',
                     price: {{ $product->price }},
-                    currency: 'XOF'
+                    currency: '{{ $product->currency ?? 'XOF' }}'
                 }]
             });
         }
@@ -36,16 +35,16 @@
             <div class="bg-gray-50 border border-gray-100 rounded-2xl p-6 mb-10 inline-block text-left w-full max-w-sm">
                 <div class="flex justify-between items-center mb-4">
                     <span class="text-gray-600 font-medium">Prix unitaire</span>
-                    <span class="text-gray-900 font-bold">{{ number_format($product->price, 2, ',', ' ') }} CFA</span>
+                    <span class="text-gray-900 font-bold">{{ number_format($product->price, $product->currency === 'XOF' ? 0 : 2, ',', ' ') }} {{ $product->currency === 'XOF' ? 'CFA' : $product->currency }}</span>
                 </div>
                 <div class="flex justify-between items-center mb-4">
                     <span class="text-gray-600 font-medium">Frais de traitement</span>
-                    <span class="text-green-600 font-bold">0,00 CFA</span>
+                    <span class="text-green-600 font-bold">0,00 {{ $product->currency === 'XOF' ? 'CFA' : $product->currency }}</span>
                 </div>
                 <div class="w-full h-px bg-gray-200 mb-4"></div>
                 <div class="flex justify-between items-center">
                     <span class="text-gray-900 font-bold text-lg">Total à payer</span>
-                    <span class="text-amber-600 font-black text-2xl">{{ number_format($product->price, 0, '', '') }} CFA</span>
+                    <span class="text-amber-600 font-black text-2xl">{{ number_format($product->price, $product->currency === 'XOF' ? 0 : 2, '', '') }} {{ $product->currency === 'XOF' ? 'CFA' : $product->currency }}</span>
                 </div>
             </div>
 

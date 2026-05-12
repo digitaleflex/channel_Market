@@ -51,7 +51,7 @@ class PaymentController extends Controller
         try {
             $paymentData = [
                 'amount' => $amount,
-                'currency' => 'XOF',
+                'currency' => $product->currency ?? 'XOF',
                 'description' => "Paiement pour la commande #{$order->id}",
                 'customer' => [
                     'email' => $validated['email'],

@@ -14,8 +14,7 @@
                 content_name: '{{ $product->title }}',
                 content_ids: ['{{ $product->id }}'],
                 content_type: 'product',
-                value: {{ $product->price }},
-                currency: 'XOF'
+                currency: '{{ $product->currency ?? 'XOF' }}'
             });
         }
         if (typeof gtag === 'function') {
@@ -24,7 +23,7 @@
                     item_id: '{{ $product->id }}',
                     item_name: '{{ $product->title }}',
                     price: {{ $product->price }},
-                    currency: 'XOF'
+                    currency: '{{ $product->currency ?? 'XOF' }}'
                 }]
             });
         }
@@ -39,7 +38,7 @@
       "offers": {
         "@@type": "Offer",
         "url": "{{ url()->current() }}",
-        "priceCurrency": "XOF",
+        "priceCurrency": "{{ $product->currency ?? 'XOF' }}",
         "price": "{{ $product->price }}",
         "availability": "https://schema.org/InStock"
       }
@@ -97,8 +96,8 @@
                 </h1>
 
                 <div class="flex items-baseline gap-2 mb-10">
-                    <span class="text-5xl font-black text-amber-600 tracking-tighter">{{ number_format($product->price, 0, ',', ' ') }}</span>
-                    <span class="text-xl font-bold text-slate-400 tracking-widest">FCFA</span>
+                    <span class="text-5xl font-black text-amber-600 tracking-tighter">{{ number_format($product->price, $product->currency === 'XOF' ? 0 : 2, ',', ' ') }}</span>
+                    <span class="text-xl font-bold text-slate-400 tracking-widest">{{ $product->currency === 'XOF' ? 'FCFA' : $product->currency }}</span>
                 </div>
 
                 <div class="space-y-4 mb-10">

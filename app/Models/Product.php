@@ -15,5 +15,6 @@ class Product extends Model
         'price',
         'file_path',
         'image',
+        'currency',
     ];
 }

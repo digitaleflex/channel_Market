@@ -55,7 +55,7 @@
                     
                     <!-- Floating Price Tag -->
                     <div class="absolute bottom-4 right-4 glass px-5 py-2.5 rounded-2xl shadow-xl border-white/50 backdrop-blur-xl">
-                        <span class="text-lg font-black text-slate-900">{{ number_format($product->price, 0, ',', ' ') }} <small class="text-[10px] text-slate-500 uppercase tracking-tighter">CFA</small></span>
+                        <span class="text-lg font-black text-slate-900">{{ number_format($product->price, $product->currency === 'XOF' ? 0 : 2, ',', ' ') }} <small class="text-[10px] text-slate-500 uppercase tracking-tighter">{{ $product->currency === 'XOF' ? 'CFA' : $product->currency }}</small></span>
                     </div>
 
                     <!-- Category Overlay (Example) -->
