@@ -44,7 +44,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Un guide complet pour construire des applications web ultra-rapides avec Laravel 11.',
                 'price' => 19.99,
                 'file_path' => 'downloads/laravel-11-ebook.pdf',
-                'image' => 'https://images.unsplash.com/photo-1544383835-bda2bb66499d?q=80&w=1000&auto=format&fit=crop',
+                'image' => 'products/laravel_11_masterclass.png',
             ]
         );
 
