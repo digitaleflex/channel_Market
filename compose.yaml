@@ -117,6 +117,7 @@ services:
     volumes:
       - .:/var/www
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+      - app-storage:/var/www/storage
     networks:
       - internal
       - proxy
