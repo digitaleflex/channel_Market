@@ -24,7 +24,6 @@ mkdir -p storage/logs
 mkdir -p bootstrap/cache
 
 # Force rights (Crucial for Linux Production)
-<<<<<<< HEAD
 # We use || true to ignore errors if the user doesn't have enough permissions
 # but usually, chmod should work if the user owns the files.
 chmod -R 777 /tmp/laravel_views storage bootstrap/cache || true
@@ -33,12 +32,6 @@ chmod -R 777 /tmp/laravel_views storage bootstrap/cache || true
 if [ "$(id -u)" = "0" ]; then
     chown -R www-data:www-data /tmp/laravel_views storage bootstrap/cache || true
 fi
-=======
-# We rely on the github action to fix permissions using root exec, or just use chmod if it works
-# Note: chown requires root and fails when running as non-root user, causing crash loop.
-# chmod -R 777 /tmp/laravel_views storage bootstrap/cache || true
-
->>>>>>> e6cc988 (fix: remove root-only chown commands from entrypoint.sh to prevent crash loop)
 
 # Run migrations if enabled
 if [ "$RUN_MIGRATIONS" = "true" ]; then
