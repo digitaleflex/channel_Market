@@ -4,7 +4,7 @@
   <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="300" alt="Laravel Logo">
 </p>
 
-Application de marketplace pour la vente de produits numériques (PDF, vidéos, musiques, etc.) avec paiement intégré via **Moneroo** (XOF / FCFA) et téléchargement sécurisé par token.
+Application de marketplace pour la vente de produits numériques (PDF, vidéos, musiques, etc.) avec paiement intégré via **Charriow** (XOF / FCFA) et téléchargement sécurisé par token.
 
 ---
 
@@ -17,7 +17,7 @@ Application de marketplace pour la vente de produits numériques (PDF, vidéos, 
 | Laravel Breeze | ^2.4 (authentification) |
 | Tailwind CSS   | ^3.1 + Vite             |
 | AlpineJS       | ^3.4                    |
-| Moneroo        | ^0.2.0 (paiement)       |
+| Charriow       | Paiement API            |
 | MySQL          | 5.7+ / 8.0              |
 
 ---
@@ -27,7 +27,7 @@ Application de marketplace pour la vente de produits numériques (PDF, vidéos, 
 ### Côté Client
 
 - **Catalogue de produits** — Liste des produits numériques avec page détail
-- **Checkout & Paiement** — Formulaire (email, prénom, nom, téléphone) puis redirection vers Moneroo
+- **Checkout & Paiement** — Formulaire (email, prénom, nom, téléphone) puis redirection vers Charriow
 - **Téléchargement sécurisé** — Lien unique à usage unique via token UUID par commande
 - **Historique d'achats** — Dashboard client avec liste des commandes payées
 - **Authentification** — Inscription, connexion, gestion de profil (Laravel Breeze)
@@ -42,7 +42,7 @@ Application de marketplace pour la vente de produits numériques (PDF, vidéos, 
 ### SEO & Technique
 
 - **Sitemap XML** — Généré dynamiquement à `/sitemap.xml`
-- **Webhook Moneroo** — Vérification HMAC sécurisée des paiements
+- **Webhook Charriow** — Vérification HMAC sécurisée des paiements
 - **File d'attente** — Traitement des jobs en base de données
 - **Sessions** — Gérées en base de données
 
@@ -84,7 +84,7 @@ Application de marketplace pour la vente de produits numériques (PDF, vidéos, 
 - Composer
 - Node.js >= 18 + npm
 - MySQL 5.7+ ou 8.0
-- Un compte [Moneroo](https://moneroo.io) avec clé API (mode test ou live)
+- Un compte [Charriow](https://charriow.com) avec clé API
 
 ---
 
@@ -124,9 +124,10 @@ DB_DATABASE=produit_digitaux
 DB_USERNAME=root
 DB_PASSWORD=votre_mot_de_passe
 
-# Moneroo (obligatoire pour les paiements)
-MONEROO_SECRET_KEY=votre_cle_secrete_moneroo
-MONEROO_WEBHOOK_SECRET=votre_cle_webhook_moneroo
+# Charriow
+CHARRIOW_API_KEY=votre_cle_secrete_charriow
+CHARRIOW_API_URL=https://api.charriow.com
+CHARRIOW_WEBHOOK_SECRET=votre_cle_webhook_charriow
 ```
 
 ### 4. Créer la base de données
@@ -196,14 +197,14 @@ Accédez à l'application sur [http://localhost:8000](http://localhost:8000)
 
 ---
 
-## Configuration Moneroo
+## Configuration Charriow
 
-1. Créez un compte sur [moneroo.io](https://moneroo.io)
-2. Récupérez votre **Secret Key** dans le tableau de bord
-3. Configurez un **Webhook** pointant vers `https://votredomaine.com/payment/moneroo/webhook`
+1. Créez un compte sur [charriow.com](https://charriow.com)
+2. Récupérez votre **API Key** dans le tableau de bord
+3. Configurez un **Webhook** pointant vers `https://votredomaine.com/payment/charriow/webhook`
 4. Copiez la **Webhook Secret** dans votre `.env`
 
-> Le webhook est optionnel mais recommandé : il garantit la mise à jour fiable du statut des commandes même si le client ferme la page de retour Moneroo.
+> Le webhook est recommandé : il garantit la mise à jour fiable du statut des commandes même si le client ferme la page de retour Charriow.
 
 ---
 
@@ -214,7 +215,7 @@ channel_Market/
 ├── app/
 │   ├── Http/Controllers/
 │   │   ├── ProductController.php      # Catalogue + CRUD admin
-│   │   ├── PaymentController.php      # Checkout, Moneroo, webhook
+│   │   ├── PaymentController.php      # Checkout, Charriow, webhook
 │   │   ├── OrderController.php        # Gestion commandes admin
 │   │   ├── DownloadController.php     # Téléchargement sécurisé
 │   │   ├── SettingController.php      # Paramètres admin
@@ -228,15 +229,15 @@ channel_Market/
 ├── resources/views/                   # Blade templates
 ├── routes/
 │   └── web.php                        # Toutes les routes web
-└── config/moneroo.php                 # Configuration Moneroo
+└── config/services.php               # Configuration des services externes
 ```
 
 ---
 
 ## Sécurité
 
-- **CSRF** activé sur toutes les routes (sauf webhook Moneroo)
-- **HMAC SHA-256** pour la vérification des webhooks Moneroo
+- **CSRF** activé sur toutes les routes (sauf webhook Charriow)
+- **HMAC SHA-256** pour la vérification des webhooks Charriow
 - **Tokens UUID** uniques pour chaque téléchargement
 - **Middleware `admin`** pour protéger le panel d'administration
 - **Hashage des mots de passe** via Bcrypt

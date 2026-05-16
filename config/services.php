@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'chariow' => [
+        'api_key' => env('CHARIOW_API_KEY'),
+        'api_url' => env('CHARIOW_API_URL', 'https://api.chariow.com'),
+        'default_country_code' => env('CHARIOW_DEFAULT_COUNTRY_CODE', 'FR'),
+    ],
+
 ];

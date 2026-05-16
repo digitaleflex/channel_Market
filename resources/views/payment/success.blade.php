@@ -58,7 +58,7 @@
                 </div>
             @endif
 
-            <a href="{{ route('download', $order->download_token) }}" target="_blank" class="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-amber-600 text-white font-bold rounded-2xl hover:bg-amber-700 transition shadow-lg shadow-amber-500/30 transform hover:-translate-y-1">
+            <a href="{{ URL::temporarySignedRoute('download', now()->addHours(48), ['token' => $order->download_token]) }}" target="_blank" class="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-amber-600 text-white font-bold rounded-2xl hover:bg-amber-700 transition shadow-lg shadow-amber-500/30 transform hover:-translate-y-1">
                 @if(filter_var($order->product->file_path, FILTER_VALIDATE_URL))
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                     Accéder au lien du produit

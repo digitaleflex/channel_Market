@@ -121,7 +121,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-bold text-slate-900">Paiement ultra-sécurisé</p>
-                            <p class="text-xs text-slate-500 font-medium mt-1 leading-relaxed">Transactions protégées par Moneroo (Mobile Money, Carte).</p>
+                            <p class="text-xs text-slate-500 font-medium mt-1 leading-relaxed">Transactions protégées par Charriow (Mobile Money, Carte).</p>
                         </div>
                     </div>
 

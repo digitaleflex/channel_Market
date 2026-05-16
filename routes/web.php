@@ -33,7 +33,7 @@ Route::get('/product/{product}', [ProductController::class, 'show'])->name('prod
 
 // Checkout & Payment (Public - No login required)
 Route::get('/checkout/{product}', [PaymentController::class, 'checkout'])->name('checkout');
-Route::post('/checkout/{product}', [PaymentController::class, 'initMoneroo'])
+Route::post('/checkout/{product}', [PaymentController::class, 'init'])
     ->middleware('throttle:10,1')
     ->name('checkout.init');
 
@@ -56,13 +56,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Moneroo return URL (redirected back from Moneroo)
-Route::get('/payment/moneroo/return/{order}', [PaymentController::class, 'monerooReturn'])->name('payment.moneroo.return');
+// chariow return URL
+Route::get('/payment/chariow/return/{order}', [PaymentController::class, 'chariowReturn'])->name('payment.chariow.return');
 
-// Moneroo webhook (POST, signed)
-Route::post('/payment/moneroo/webhook', [PaymentController::class, 'monerooWebhook'])
-    ->withoutMiddleware([VerifyCsrfToken::class])
-    ->name('payment.moneroo.webhook');
 
 // Payment success page (public fallback)
 Route::get('/payment/success/{order}', [PaymentController::class, 'success'])->name('payment.success');

@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Services\chariowService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Moneroo\Laravel\Payment as MonerooPayment;
 
 class PaymentController extends Controller
 {
@@ -20,9 +20,9 @@ class PaymentController extends Controller
     }
 
     /**
-     * Initializes Moneroo payment and redirects to Moneroo checkout page.
+     * Initializes chariow payment and redirects to the chariow checkout page.
      */
-    public function initMoneroo(Request $request, Product $product)
+    public function init(Request $request, Product $product, chariowService $chariow)
     {
         $validated = $request->validate([
             'email' => ['required', 'email'],
@@ -31,10 +31,8 @@ class PaymentController extends Controller
             'phone' => ['required', 'string', 'max:30'],
         ]);
 
-        // Sanitize phone: keep only digits as Moneroo is strict
-        $phone = $validated['phone'] ? preg_replace('/[^0-9]/', '', $validated['phone']) : null;
-
         $amount = (int) round((float) $product->price);
+        $phone = $this->normalizePhone($validated['phone']);
 
         $order = Order::create([
             'user_id' => auth()->id(),
@@ -49,39 +47,65 @@ class PaymentController extends Controller
         ]);
 
         try {
+            $productId = $this->resolveChariowProductId($product);
+            $redirectUrl = route('payment.chariow.return', ['order' => $order->id]).'?sale='.urlencode('{sale_id}');
+
             $paymentData = [
-                'amount' => $amount,
-                'currency' => 'XOF',
-                'description' => "Paiement pour la commande #{$order->id}",
-                'customer' => [
-                    'email' => $validated['email'],
-                    'first_name' => $validated['first_name'],
-                    'last_name' => $validated['last_name'],
-                    'phone' => $phone,
+                'product_id' => $productId,
+                'email' => $validated['email'],
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'phone' => [
+                    'number' => $phone['number'],
+                    'country_code' => $phone['country_code'],
                 ],
-                'return_url' => route('payment.moneroo.return', ['order' => $order->id]),
-                'metadata' => [
+                'redirect_url' => $redirectUrl,
+                'custom_metadata' => [
                     'order_id' => (string) $order->id,
                     'product_id' => (string) $product->id,
                 ],
             ];
 
-            $monerooPayment = new MonerooPayment;
-            $payment = $monerooPayment->init($paymentData);
+            $checkout = $chariow->initPayment($paymentData);
+            $step = $checkout['step'] ?? null;
+            $purchase = $checkout['purchase'] ?? [];
+            $payment = $checkout['payment'] ?? [];
+            $paymentUrl = $payment['checkout_url'] ?? null;
+            $transactionId = $payment['transaction_id'] ?? $purchase['id'] ?? null;
 
-            if (! isset($payment->id, $payment->checkout_url)) {
-                Log::warning('Moneroo init: unexpected response', ['payment' => $payment]);
-
-                return redirect()
-                    ->route('checkout', $product)
-                    ->with('error', "Impossible d'initialiser le paiement. Réessayez.");
+            if ($step === 'payment' && $paymentUrl) {
+                $order->update(['transaction_id' => $transactionId]);
+                return redirect()->away($paymentUrl);
             }
 
-            $order->update(['transaction_id' => $payment->id]);
+            if ($step === 'completed') {
+                $order->update([
+                    'status' => 'success',
+                    'transaction_id' => $transactionId,
+                ]);
 
-            return redirect()->away($payment->checkout_url);
+                if (auth()->check()) {
+                    return redirect('/dashboard')
+                        ->with('success', 'Paiement réussi ! Votre produit est maintenant disponible dans votre espace.');
+                }
+
+                return redirect()->route('payment.success', $order)
+                    ->with('success', 'Paiement réussi, votre téléchargement est prêt.');
+            }
+
+            if ($step === 'already_purchased') {
+                return redirect()
+                    ->route('products.show', $product)
+                    ->with('error', 'Vous avez déjà acheté ce produit.');
+            }
+
+            Log::warning('chariow init: unexpected response', ['checkout' => $checkout]);
+
+            return redirect()
+                ->route('checkout', $product)
+                ->with('error', "Impossible d'initialiser le paiement. Réessayez.");
         } catch (\Throwable $e) {
-            Log::error('Moneroo init failed', [
+            Log::error('chariow init failed', [
                 'order_id' => $order->id,
                 'message' => $e->getMessage(),
             ]);
@@ -93,132 +117,107 @@ class PaymentController extends Controller
     }
 
     /**
-     * Return URL after Moneroo checkout (always verify via API).
+     * Return URL after chariow checkout.
      */
-    public function monerooReturn(Request $request, Order $order)
+    public function chariowReturn(Request $request, Order $order)
     {
-        $paymentId = $request->query('paymentId');
-        $paymentStatus = $request->query('paymentStatus');
+        $saleId = $request->query('sale');
 
-        if (! $paymentId) {
+        if (! $saleId) {
             return redirect()
                 ->route('products.show', $order->product_id)
                 ->with('error', 'Retour paiement invalide.');
         }
 
-        // Defensive: ensure the returned payment matches our order
-        if ($order->transaction_id && $order->transaction_id !== $paymentId) {
-            Log::warning('Moneroo return paymentId mismatch', [
-                'order_id' => $order->id,
-                'order_transaction_id' => $order->transaction_id,
-                'paymentId' => $paymentId,
-                'paymentStatus' => $paymentStatus,
-            ]);
-        }
-
-        try {
-            $monerooPayment = new MonerooPayment;
-            $payment = $monerooPayment->verify($paymentId);
-
-            $status = $payment->status ?? null;
-            $amount = $payment->amount ?? null;
-
-            if ($status === 'success' && (int) $amount >= (int) $order->amount) {
-                $order->update([
-                    'status' => 'success',
-                    'transaction_id' => $paymentId,
-                ]);
-
-                if (auth()->check()) {
-                    return redirect('/dashboard')
-                        ->with('success', 'Paiement réussi ! Votre produit est maintenant disponible dans votre espace.');
-                }
-
-                return redirect()
-                    ->route('payment.success', $order)
-                    ->with('success', 'Paiement réussi, votre téléchargement est prêt.');
+        if ($order->status === 'success') {
+            if (auth()->check()) {
+                return redirect('/dashboard')
+                    ->with('success', 'Paiement réussi ! Votre produit est maintenant disponible dans votre espace.');
             }
-        } catch (\Throwable $e) {
-            Log::error('Moneroo verify failed', [
-                'order_id' => $order->id,
-                'paymentId' => $paymentId,
-                'message' => $e->getMessage(),
-            ]);
-        }
 
-        $order->update([
-            'status' => 'failed',
-            'transaction_id' => $paymentId,
-        ]);
+            return redirect()->route('payment.success', $order)
+                ->with('success', 'Paiement réussi, votre téléchargement est prêt.');
+        }
 
         return redirect()
             ->route('products.show', $order->product_id)
-            ->with('error', 'Le paiement a échoué ou est incomplet.');
+            ->with('success', 'Votre paiement est en cours de confirmation. Vous recevrez l’accès dès que la transaction sera validée.');
     }
 
     /**
-     * Moneroo webhook endpoint (verify signature + re-query payment status).
-     * This is optional but recommended (more reliable than return_url).
+     * chariow webhook endpoint.
      */
-    public function monerooWebhook(Request $request)
+    public function chariowWebhook(Request $request, chariowService $chariow)
     {
-        $secret = (string) trim(env('MONEROO_WEBHOOK_SECRET', ''));
-        $signature = (string) $request->header('X-Moneroo-Signature', '');
-        $payload = (string) $request->getContent();
-
-        if ($secret === '' || $signature === '') {
-            Log::warning('Moneroo webhook: Missing secret or signature');
-
-            return response()->json(['error' => 'Webhook not configured'], 400);
-        }
-
-        $computed = hash_hmac('sha256', $payload, $secret);
-        if (! hash_equals($computed, $signature)) {
-            Log::error('Moneroo webhook: Invalid signature', [
-                'received' => $signature,
-                'computed' => $computed,
-                'payload_sample' => substr($payload, 0, 100),
-            ]);
+        if (! $chariow->validateWebhook($request)) {
+            Log::error('chariow webhook: invalid signature');
 
             return response()->json(['error' => 'Invalid signature'], 403);
         }
 
-        $event = $request->input('event');
-        $paymentId = $request->input('data.id');
+        $payload = $request->json()->all();
+        $paymentId = $payload['data']['id'] ?? $payload['id'] ?? null;
+        $status = strtolower($payload['data']['status'] ?? $payload['status'] ?? '');
+        $metadata = $payload['data']['custom_metadata'] ?? $payload['custom_metadata'] ?? [];
+        $orderId = $metadata['order_id'] ?? null;
 
         if (! $paymentId) {
             return response()->json(['error' => 'Missing payment id'], 422);
         }
 
-        // We always re-query Moneroo to avoid trusting the webhook payload fully.
-        try {
-            $monerooPayment = new MonerooPayment;
-            $payment = $monerooPayment->verify($paymentId);
-            $status = $payment->status ?? null;
-            $amount = $payment->amount ?? null;
-            $metadata = $payment->metadata ?? null;
+        $order = $orderId ? Order::find($orderId) : Order::where('transaction_id', $paymentId)->first();
 
-            $orderId = is_object($metadata) ? ($metadata->order_id ?? null) : null;
-            $order = $orderId ? Order::find($orderId) : Order::where('transaction_id', $paymentId)->first();
-
-            if (! $order) {
-                Log::warning('Moneroo webhook: order not found', ['paymentId' => $paymentId, 'event' => $event]);
-
-                return response()->json(['ok' => true], 200);
-            }
-
-            if ($status === 'success' && (int) $amount >= (int) $order->amount) {
-                $order->update(['status' => 'success', 'transaction_id' => $paymentId]);
-            } elseif (in_array($status, ['failed', 'cancelled'], true)) {
-                $order->update(['status' => 'failed', 'transaction_id' => $paymentId]);
-            }
-
-            return response()->json(['ok' => true], 200);
-        } catch (\Throwable $e) {
-            Log::error('Moneroo webhook verify failed', ['paymentId' => $paymentId, 'message' => $e->getMessage()]);
-
+        if (! $order) {
+            Log::warning('chariow webhook: order not found', ['paymentId' => $paymentId]);
             return response()->json(['ok' => true], 200);
         }
+
+        if (in_array($status, ['success', 'paid', 'approved', 'completed'], true)) {
+            $order->update(['status' => 'success', 'transaction_id' => $paymentId]);
+        } elseif (in_array($status, ['failed', 'cancelled', 'refused', 'expired'], true)) {
+            $order->update(['status' => 'failed', 'transaction_id' => $paymentId]);
+        }
+
+        return response()->json(['ok' => true], 200);
+    }
+
+    private function normalizePhone(string $phone): array
+    {
+        $digits = preg_replace('/[^0-9]+/', '', $phone);
+        $countryCode = config('services.chariow.default_country_code', 'FR');
+
+        if (str_starts_with(trim($phone), '+')) {
+            if (preg_match('/^\+([0-9]{1,3})/', trim($phone), $matches)) {
+                $countryCode = $this->countryCodeFromDialCode($matches[1]) ?? $countryCode;
+            }
+        }
+
+        return [
+            'number' => $digits,
+            'country_code' => $countryCode,
+        ];
+    }
+
+    private function countryCodeFromDialCode(string $dialCode): ?string
+    {
+        $map = [
+            '33' => 'FR',
+            '229' => 'BJ',
+            '225' => 'CI',
+            '237' => 'CM',
+            '243' => 'CD',
+            '226' => 'BF',
+            '228' => 'TG',
+            '236' => 'CF',
+            '241' => 'GA',
+        ];
+
+        return $map[$dialCode] ?? null;
+    }
+
+    private function resolveChariowProductId(Product $product): string
+    {
+        return $product->chariow_product_id ?? (string) $product->id;
     }
 
     /**

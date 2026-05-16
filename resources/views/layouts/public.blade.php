@@ -179,7 +179,7 @@
             <div class="mt-20 pt-10 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
                 <p class="text-slate-400 text-sm font-bold tracking-tight">&copy; {{ date('Y') }} Channel Market. Built with Excellence.</p>
                 <div class="flex items-center gap-8">
-                    <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Secured by Moneroo</span>
+                    <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Secured by Charriow</span>
                     <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Premium Marketplace</span>
                 </div>
             </div>

@@ -65,6 +65,13 @@
                             </div>
 
                             <div>
+                                <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Chariow Product ID</label>
+                                <input type="text" name="chariow_product_id" class="input-premium" value="{{ old('chariow_product_id', $product->chariow_product_id) }}" placeholder="Ex: prd_abc123xyz">
+                                <p class="text-xs text-slate-400 mt-2">ID du produit Chariow utilisé pour le checkout API.</p>
+                                @error('chariow_product_id') <span class="text-rose-500 text-xs font-bold mt-2 block">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
                                 <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Description complète</label>
                                 <input id="description" type="hidden" name="description" value="{{ old('description', $product->description) }}">
                                 <trix-editor input="description" class="trix-content"></trix-editor>
@@ -87,7 +94,7 @@
                                 
                                 <div class="flex gap-4 mb-6">
                                     <label class="flex-1 cursor-pointer group">
-                                        <input type="radio" name="product_type" value="file" x-model="productType" class="hidden">
+                                        <input type="radio" name="product_type" value="file" x-model="productType" class="hidden" checked>
                                         <div class="p-3 rounded-xl border-2 text-center transition-all" :class="productType === 'file' ? 'border-indigo-500 bg-white text-indigo-600 shadow-md' : 'border-slate-100 text-slate-400 group-hover:border-slate-200'">
                                             <span class="text-xs font-black uppercase">Fichier</span>
                                         </div>
