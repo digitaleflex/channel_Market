@@ -18,11 +18,11 @@
 
         @include('components.tracking')
     </head>
-    <body class="font-sans antialiased bg-slate-50 selection:bg-indigo-500 selection:text-white overflow-x-hidden">
+    <body class="font-sans antialiased bg-slate-50 selection:bg-amber-500 selection:text-white overflow-x-hidden">
         <!-- Decorative Blobs -->
         <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-            <div class="blur-blob w-[600px] h-[600px] bg-indigo-200/30 top-[-300px] left-[-150px]"></div>
-            <div class="blur-blob w-[500px] h-[500px] bg-purple-200/30 bottom-[-150px] right-[-150px] animation-delay-2000"></div>
+            <div class="blur-blob w-[600px] h-[600px] bg-amber-200/30 top-[-300px] left-[-150px]"></div>
+            <div class="blur-blob w-[500px] h-[500px] bg-orange-200/30 bottom-[-150px] right-[-150px] animation-delay-2000"></div>
         </div>
 
         <div class="min-h-screen">

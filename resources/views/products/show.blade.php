@@ -48,7 +48,7 @@
 
 <div class="container-app py-12 md:py-20">
     <div class="mb-12">
-        <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 text-slate-500 hover:text-amber-600 font-bold transition-colors group">
+        <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 text-slate-600 hover:text-amber-600 font-bold transition-colors group">
             <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             Retour au catalogue
         </a>
@@ -65,7 +65,7 @@
                              alt="{{ $product->title }}" 
                              class="w-full h-auto object-cover hover:scale-105 transition-transform duration-1000">
                     @else
-                        <div class="aspect-video bg-slate-50 flex flex-col items-center justify-center text-slate-400">
+                        <div class="aspect-video bg-slate-50 flex flex-col items-center justify-center text-slate-500">
                             <svg class="w-20 h-20 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             <span class="font-bold uppercase tracking-widest text-xs">Aperçu non disponible</span>
                         </div>
@@ -76,7 +76,7 @@
             <!-- Detailed Description -->
             <div class="mt-12 surface p-8 md:p-12">
                 <h3 class="text-2xl font-black text-slate-900 mb-6 tracking-tight">Description détaillée</h3>
-                <div class="prose prose-indigo max-w-none text-slate-600 font-medium leading-relaxed">
+                <div class="prose prose-amber max-w-none text-slate-700 font-medium leading-relaxed">
                     {!! $product->description !!}
                 </div>
             </div>
@@ -84,11 +84,11 @@
 
         <!-- Right: Actions & Stats -->
         <div class="lg:col-span-5 sticky top-24">
-            <div class="card-premium p-8 md:p-10 border-indigo-100/50">
+            <div class="card-premium p-8 md:p-10 border-amber-100/50">
                 <div class="flex items-center gap-2 mb-4">
                     <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest border border-emerald-100">Disponible</span>
                     <span class="text-slate-300 text-xs">•</span>
-                    <span class="text-slate-400 text-xs font-bold">Produit Digital</span>
+                    <span class="text-slate-500 text-xs font-bold">Produit Digital</span>
                 </div>
 
                 <h1 class="text-3xl md:text-4xl font-black text-slate-900 mb-6 tracking-tighter leading-tight">
@@ -97,11 +97,11 @@
 
                 <div class="flex items-baseline gap-2 mb-10">
                     <span class="text-5xl font-black text-amber-600 tracking-tighter">{{ number_format($product->price, $product->currency === 'XOF' ? 0 : 2, ',', ' ') }}</span>
-                    <span class="text-xl font-bold text-slate-400 tracking-widest">{{ $product->currency === 'XOF' ? 'FCFA' : $product->currency }}</span>
+                    <span class="text-xl font-bold text-slate-500 tracking-widest">{{ $product->currency === 'XOF' ? 'FCFA' : $product->currency }}</span>
                 </div>
 
                 <div class="space-y-4 mb-10">
-                    <a href="{{ route('checkout', $product) }}" class="btn-premium-primary w-full !py-5 text-lg justify-center shadow-indigo-200">
+                    <a href="{{ route('checkout', $product) }}" class="btn-premium-primary w-full !py-5 text-lg justify-center shadow-amber-200">
                         Acheter maintenant
                         <svg class="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     </a>
@@ -120,7 +120,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-bold text-slate-900">Paiement ultra-sécurisé</p>
-                            <p class="text-xs text-slate-500 font-medium mt-1 leading-relaxed">Transactions protégées par Charriow (Mobile Money, Carte).</p>
+                            <p class="text-xs text-slate-600 font-medium mt-1 leading-relaxed">Transactions protégées par Chariow (Mobile Money, Carte).</p>
                         </div>
                     </div>
 
@@ -130,13 +130,13 @@
                         </div>
                         <div>
                             <p class="text-sm font-bold text-slate-900">Accès instantané</p>
-                            <p class="text-xs text-slate-500 font-medium mt-1 leading-relaxed">Téléchargez vos fichiers immédiatement après le paiement.</p>
+                            <p class="text-xs text-slate-600 font-medium mt-1 leading-relaxed">Téléchargez vos fichiers immédiatement après le paiement.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-10 pt-8 border-t border-slate-100 text-center">
-                    <a href="{{ url('/dashboard') }}" class="text-xs font-bold text-slate-400 hover:text-amber-600 transition-colors underline underline-offset-8">
+                    <a href="{{ url('/dashboard') }}" class="text-xs font-bold text-slate-500 hover:text-amber-600 transition-colors underline underline-offset-8">
                         Consulter mon historique d'achats
                     </a>
                 </div>

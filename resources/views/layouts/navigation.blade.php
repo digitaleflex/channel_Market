@@ -6,7 +6,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </div>
                         <span class="hidden sm:block text-xl font-black tracking-tighter gradient-text">
@@ -45,10 +45,10 @@
                     <x-slot name="trigger">
                         <button class="inline-flex items-center gap-3 px-3 py-2 text-sm font-bold rounded-xl text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-100 transition-all duration-300 active:scale-95">
                             <div class="hidden lg:block">{{ Auth::user()->name }}</div>
-                            <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs font-black shadow-md shadow-indigo-200">
+                            <div class="w-8 h-8 rounded-lg bg-amber-600 text-white flex items-center justify-center text-xs font-black shadow-md shadow-amber-200">
                                 {{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                             </div>
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                     </x-slot>
 
@@ -73,7 +73,7 @@
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="w-10 h-10 flex items-center justify-center rounded-xl text-slate-500 bg-slate-50 border border-slate-100 active:scale-95 transition-all">
+                <button @click="open = ! open" class="w-10 h-10 flex items-center justify-center rounded-xl text-slate-600 bg-slate-50 border border-slate-100 active:scale-95 transition-all">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -110,12 +110,12 @@
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-slate-100">
             <div class="px-4 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black">
+                <div class="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center font-black">
                     {{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                 </div>
                 <div>
                     <div class="font-bold text-base text-slate-900">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-xs text-slate-400">{{ Auth::user()->email }}</div>
+                    <div class="font-medium text-xs text-slate-500">{{ Auth::user()->email }}</div>
                 </div>
             </div>
 
