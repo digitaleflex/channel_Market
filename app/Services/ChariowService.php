@@ -11,10 +11,13 @@ class ChariowService
 
     protected string $apiUrl = '';
 
+    protected string $webhookSecret = '';
+
     public function __construct()
     {
         $this->apiKey = config('services.chariow.api_key') ?? '';
         $this->apiUrl = rtrim(config('services.chariow.api_url', 'https://api.chariow.com'), '/');
+        $this->webhookSecret = config('services.chariow.webhook_secret') ?? '';
     }
 
     public function initPayment(array $payload): array

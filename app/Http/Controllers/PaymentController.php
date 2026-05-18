@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Product;
 use App\Services\ActivityLogger;
-use App\Services\chariowService;
+use App\Services\ChariowService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -23,7 +23,7 @@ class PaymentController extends Controller
     /**
      * Initializes chariow payment and redirects to the chariow checkout page.
      */
-    public function init(Request $request, Product $product, chariowService $chariow)
+    public function init(Request $request, Product $product, ChariowService $chariow)
     {
         $validated = $request->validate([
             'email' => ['required', 'email'],
@@ -152,7 +152,7 @@ class PaymentController extends Controller
     /**
      * chariow webhook endpoint.
      */
-    public function chariowWebhook(Request $request, chariowService $chariow)
+    public function chariowWebhook(Request $request, ChariowService $chariow)
     {
         if (! $chariow->validateWebhook($request)) {
             Log::error('chariow webhook: invalid signature');
