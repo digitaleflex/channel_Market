@@ -85,6 +85,8 @@ class PaymentController extends Controller
                     'transaction_id' => $transactionId,
                 ]);
 
+                \App\Services\ActivityLogger::log('order_success', "Nouvelle vente de {$order->amount} CFA pour le produit : {$order->product->title}", $order);
+
                 if (auth()->check()) {
                     return redirect('/dashboard')
                         ->with('success', 'Paiement réussi ! Votre produit est maintenant disponible dans votre espace.');
@@ -174,7 +176,10 @@ class PaymentController extends Controller
         }
 
         if (in_array($status, ['success', 'paid', 'approved', 'completed'], true)) {
-            $order->update(['status' => 'success', 'transaction_id' => $paymentId]);
+            if ($order->status !== 'success') {
+                $order->update(['status' => 'success', 'transaction_id' => $paymentId]);
+                \App\Services\ActivityLogger::log('order_success', "Nouvelle vente de {$order->amount} CFA pour le produit : {$order->product->title}", $order);
+            }
         } elseif (in_array($status, ['failed', 'cancelled', 'refused', 'expired'], true)) {
             $order->update(['status' => 'failed', 'transaction_id' => $paymentId]);
         }

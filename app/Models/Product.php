@@ -16,5 +16,6 @@ class Product extends Model
         'file_path',
         'image',
         'currency',
+        'chariow_product_id',
     ];
 }

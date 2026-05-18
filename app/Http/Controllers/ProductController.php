@@ -71,7 +71,7 @@ class ProductController extends Controller
 
         $imagePath = $request->file('image_file')->store('products', 'public');
 
-        Product::create([
+        $product = Product::create([
             'title' => $validated['title'],
             'description' => $validated['description'],
             'price' => $validated['price'],
@@ -79,6 +79,8 @@ class ProductController extends Controller
             'image' => $imagePath,
             'chariow_product_id' => $validated['chariow_product_id'] ?? null,
         ]);
+
+        \App\Services\ActivityLogger::log('product_created', "Création du produit : {$product->title}", $product);
 
         return redirect()->route('admin.products.index')->with('success', 'Produit créé avec succès !');
     }
@@ -141,6 +143,8 @@ class ProductController extends Controller
 
         $product->save();
 
+        \App\Services\ActivityLogger::log('product_updated', "Modification du produit : {$product->title}", $product);
+
         return redirect()->route('admin.products.index')->with('success', 'Produit mis à jour avec succès !');
     }
 
@@ -185,7 +189,10 @@ class ProductController extends Controller
             Storage::disk('public')->delete($product->image);
         }
 
+        $productTitle = $product->title;
         $product->delete();
+
+        \App\Services\ActivityLogger::log('product_deleted', "Suppression du produit : {$productTitle}");
 
         return redirect()->route('admin.products.index')->with('success', 'Produit supprimé avec succès !');
     }
