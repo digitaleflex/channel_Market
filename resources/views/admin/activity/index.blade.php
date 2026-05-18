@@ -15,7 +15,7 @@
             
             <!-- Statistiques d'activité -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-6 rounded-3xl bg-white border border-slate-100 shadow-sm flex items-center gap-4">
+                <div class="card-cyber p-6 flex items-center gap-4">
                     <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-black">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
@@ -25,7 +25,7 @@
                     </div>
                 </div>
 
-                <div class="p-6 rounded-3xl bg-white border border-slate-100 shadow-sm flex items-center gap-4">
+                <div class="card-cyber p-6 flex items-center gap-4">
                     <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                     </div>
@@ -35,7 +35,7 @@
                     </div>
                 </div>
 
-                <div class="p-6 rounded-3xl bg-white border border-slate-100 shadow-sm flex items-center gap-4">
+                <div class="card-cyber p-6 flex items-center gap-4">
                     <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
@@ -47,7 +47,7 @@
             </div>
 
             <!-- Dashboard principal à onglets -->
-            <div class="card-premium p-8 sm:p-12" x-data="{ tab: '{{ request()->has('deployments_page') ? 'deployments' : 'activities' }}' }">
+            <div class="card-cyber p-8 sm:p-12" x-data="{ tab: '{{ request()->has('deployments_page') ? 'deployments' : 'activities' }}' }">
                 
                 <!-- En-tête des onglets -->
                 <div class="flex border-b border-slate-100 gap-8 mb-8">
