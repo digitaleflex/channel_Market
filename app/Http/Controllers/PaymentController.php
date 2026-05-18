@@ -113,11 +113,28 @@ class PaymentController extends Controller
             Log::error('chariow init failed', [
                 'order_id' => $order->id,
                 'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
             ]);
+
+            $friendlyMessage = "Une erreur est survenue lors de l'initialisation du paiement. Veuillez réessayer dans quelques instants.";
+
+            if ($e instanceof \Illuminate\Http\Client\RequestException) {
+                $status = $e->response->status();
+                if ($status === 401) {
+                    $friendlyMessage = "Le service de paiement est actuellement indisponible (erreur d'authentification API). L'administrateur a été notifié pour résoudre ce problème.";
+                } elseif ($status === 403) {
+                    $friendlyMessage = "La transaction a été refusée ou bloquée par la passerelle de paiement.";
+                } else {
+                    $apiMessage = $e->response->json('message');
+                    if ($apiMessage) {
+                        $friendlyMessage = "Message de la passerelle : " . $apiMessage;
+                    }
+                }
+            }
 
             return redirect()
                 ->route('checkout', $product)
-                ->with('error', "Erreur lors de l'initialisation du paiement : ".$e->getMessage());
+                ->with('error', $friendlyMessage);
         }
     }
 
