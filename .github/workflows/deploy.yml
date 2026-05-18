@@ -11,6 +11,13 @@ jobs:
     # Note: Pour une dépendance stricte entre fichiers, on utilise workflow_run.
     # Ici, on part du principe que ce workflow est autonome ou déclenché manuellement/après merge.
     steps:
+    - name: Notify Webhook - Deployment Started
+      run: |
+        curl -X POST "https://channelmarket.net/webhook/deploy" \
+          -H "Content-Type: application/json" \
+          -H "X-Deploy-Token: default-secure-deploy-token-123" \
+          -d '{"commit_sha":"${{ github.sha }}", "commit_message":"${{ github.event.head_commit.message }}", "status":"deploying"}' || true
+
     - name: Diagnostic réseau (Vérification Connectivité)
       run: |
         echo "Tentative de ping vers l'hôte..."
@@ -101,9 +108,14 @@ jobs:
             exit 1
           fi
 
-    - name: Notification Succès (Email)
+    - name: Notification Succès (Email & Webhook)
       if: success()
       run: |
+        curl -X POST "https://channelmarket.net/webhook/deploy" \
+          -H "Content-Type: application/json" \
+          -H "X-Deploy-Token: default-secure-deploy-token-123" \
+          -d '{"commit_sha":"${{ github.sha }}", "status":"success"}' || true
+
         curl -X POST https://api.resend.com/emails \
           -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
           -H "Content-Type: application/json" \
@@ -114,9 +126,14 @@ jobs:
             "html": "<h3>Félicitations !</h3><p>Le déploiement de <b>Channel Market</b> sur ton VPS s est déroulé avec succès.</p><p>Version : ${{ github.sha }}</p><p><a href=\"https://channelmarket.net\">Accéder au site</a></p>"
           }'
 
-    - name: Notification Échec (Email)
+    - name: Notification Échec (Email & Webhook)
       if: failure()
       run: |
+        curl -X POST "https://channelmarket.net/webhook/deploy" \
+          -H "Content-Type: application/json" \
+          -H "X-Deploy-Token: default-secure-deploy-token-123" \
+          -d '{"commit_sha":"${{ github.sha }}", "status":"failed"}' || true
+
         curl -X POST https://api.resend.com/emails \
           -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
           -H "Content-Type: application/json" \

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\DeploymentWebhookController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
@@ -58,6 +59,10 @@ Route::middleware('auth')->group(function () {
 
 // chariow return URL
 Route::get('/payment/chariow/return/{order}', [PaymentController::class, 'chariowReturn'])->name('payment.chariow.return');
+Route::post('/payment/chariow/webhook', [PaymentController::class, 'chariowWebhook'])->name('payment.chariow.webhook');
+
+// Deployment Webhook
+Route::post('/webhook/deploy', [DeploymentWebhookController::class, 'handle'])->name('webhook.deploy');
 
 // Payment success page (public fallback)
 Route::get('/payment/success/{order}', [PaymentController::class, 'success'])->name('payment.success');
