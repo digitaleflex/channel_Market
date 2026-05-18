@@ -61,6 +61,11 @@ jobs:
             exit 1
           fi
           
+          # Extraire les assets compilés (CSS/JS) depuis le conteneur vers l'hôte pour Nginx
+          echo "Extraction des assets compilés (CSS/JS)..."
+          docker cp channel-market-app-1:/var/www/public/build ./public/
+          chmod -R 755 public/build
+
           # Fix Permissions & Folders
           docker compose exec -T --user root app mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions bootstrap/cache
           docker compose exec -T --user root app chmod -R 777 storage bootstrap/cache
