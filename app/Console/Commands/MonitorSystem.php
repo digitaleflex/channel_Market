@@ -43,7 +43,7 @@ class MonitorSystem extends Command
 
             $adminEmails = array_filter(explode(',', env('ADMIN_NOTIFICATION_EMAILS'))) ?: ['digitaleflex@gmail.com', 'elfridayemadje5@gmail.com'];
             Mail::to($adminEmails)->send(new SystemAlertMail($message, $context));
- 
+
             $this->error('Problèmes détectés ! Alerte envoyée aux administrateurs.');
         } else {
             $this->info('Système en bonne santé.');
