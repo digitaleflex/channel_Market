@@ -51,7 +51,7 @@ jobs:
           -H "Content-Type: application/json" \
           -d '{
             "from": "noreply@channelmarket.net",
-            "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com"],
+            "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com", "${{ github.event.head_commit.author.email }}"],
             "subject": "🚨 ÉCHEC des Tests - Déploiement Annulé",
             "html": "<h3>Attention !</h3><p>Le déploiement de <b>Channel Market</b> a été <b>annulé</b> car les tests automatisés ou la qualité du code ont échoué.</p><p><b>Auteur :</b> ${{ github.event.head_commit.author.name }} (${{ github.event.head_commit.author.email }})</p><p><b>Message de commit :</b> ${{ github.event.head_commit.message }}</p><p><b>Branche :</b> ${{ github.ref_name }}</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions\">Voir les détails de l erreur sur GitHub Actions</a></p>"
           }'
@@ -156,7 +156,7 @@ jobs:
           -H "Content-Type: application/json" \
           -d '{
             "from": "noreply@channelmarket.net",
-            "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com"],
+            "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com", "${{ github.event.head_commit.author.email }}"],
             "subject": "✅ Déploiement RÉUSSI - Channel Market",
             "html": "<h3>Félicitations !</h3><p>Le déploiement de <b>Channel Market</b> sur ton VPS s est déroulé avec succès.</p><p>Version : ${{ github.sha }}</p><p><b>Auteur :</b> ${{ github.event.head_commit.author.name }}</p><p><b>Branche :</b> ${{ github.ref_name }}</p><p><a href=\"https://channelmarket.net\">Accéder au site</a></p>"
           }'
@@ -171,7 +171,7 @@ jobs:
           -H "Content-Type: application/json" \
           -d '{
             "from": "noreply@channelmarket.net",
-            "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com"],
+            "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com", "${{ github.event.head_commit.author.email }}"],
             "subject": "🚨 ERREUR de Déploiement (SSH/Serveur) - Channel Market",
             "html": "<h3>Attention !</h3><p>Le déploiement de <b>Channel Market</b> sur le serveur a échoué (erreur d installation ou d exécution Docker).</p><p>Le serveur a automatiquement exécuté un rollback vers la version stable précédente.</p><p><b>Auteur :</b> ${{ github.event.head_commit.author.name }}</p><p><b>Branche :</b> ${{ github.ref_name }}</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions\">Voir les logs d erreur sur GitHub</a></p>"
           }'
