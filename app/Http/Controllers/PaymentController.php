@@ -37,7 +37,7 @@ class PaymentController extends Controller
         $order = Order::create([
             'user_id' => auth()->id(),
             'client_email' => $validated['email'],
-            'client_name' => $validated['first_name'].' '.$validated['last_name'],
+            'client_name' => $validated['first_name'] . ' ' . $validated['last_name'],
             'client_phone' => $validated['phone'],
             'product_id' => $product->id,
             'amount' => $amount,
@@ -112,7 +112,7 @@ class PaymentController extends Controller
 
             return redirect()
                 ->route('checkout', $product)
-                ->with('error', "Erreur lors de l'initialisation du paiement : ".$e->getMessage());
+                ->with('error', "Erreur lors de l'initialisation du paiement : " . $e->getMessage());
         }
     }
 
@@ -151,13 +151,13 @@ class PaymentController extends Controller
             $metadata = $sale['custom_metadata'] ?? [];
             $orderId = $metadata['order_id'] ?? null;
 
-            if (! $paymentId) {
+            if (!$paymentId) {
                 return response()->json(['error' => 'Missing payment id'], 422);
             }
 
             $order = $orderId ? Order::find($orderId) : Order::where('transaction_id', $paymentId)->first();
 
-            if (! $order) {
+            if (!$order) {
                 Log::warning('chariow webhook: order not found', ['paymentId' => $paymentId]);
                 return response()->json(['ok' => true], 200);
             }
