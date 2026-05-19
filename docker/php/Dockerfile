@@ -57,8 +57,8 @@ WORKDIR /var/www
 # Copy application files
 COPY . .
 
-# Copy compiled assets from Stage 1
-COPY --from=frontend-builder /app/public/build ./public/build
+# Copy compiled assets from Stage 1 to a neutral path (to prevent volume masking)
+COPY --from=frontend-builder /app/public/build /var/build
 
 # Create system user
 RUN useradd -G www-data,root -u $uid -d /home/$user $user \

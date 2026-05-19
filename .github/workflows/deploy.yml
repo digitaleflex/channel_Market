@@ -114,7 +114,8 @@ jobs:
           fi
           
           echo "Extraction des assets compilés (CSS/JS)..."
-          docker cp channel-market-app-1:/var/www/public/build ./public/
+          rm -rf ./public/build
+          docker cp channel-market-app-1:/var/build ./public/
           chmod -R 755 public/build
  
           docker compose exec -T --user root app mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions bootstrap/cache
