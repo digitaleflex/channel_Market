@@ -44,7 +44,7 @@
         @forelse($products as $product)
             <div class="card-premium group flex flex-col h-full bg-white">
                 <!-- Image Container -->
-                <div class="relative aspect-[4/3] overflow-hidden">
+                <a href="{{ route('products.show', $product) }}" class="block relative aspect-[4/3] overflow-hidden">
                     @if($product->image)
                         <img src="{{ filter_var($product->image, FILTER_VALIDATE_URL) ? $product->image : asset('storage/' . $product->image) }}" alt="{{ $product->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     @else
@@ -62,10 +62,12 @@
                     <div class="absolute top-4 left-4">
                         <span class="badge-premium bg-slate-900/80 text-white backdrop-blur shadow-lg">Promo</span>
                     </div>
-                </div>
+                </a>
                 
                 <div class="p-8 flex flex-col flex-grow">
-                    <h3 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-amber-600 transition-colors duration-300 leading-tight">{{ $product->title }}</h3>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-amber-600 transition-colors duration-300 leading-tight">
+                        <a href="{{ route('products.show', $product) }}" class="hover:underline">{{ $product->title }}</a>
+                    </h3>
                     <p class="text-slate-600 mb-8 line-clamp-2 text-sm leading-relaxed font-medium">
                         {{ strip_tags($product->description) }}
                     </p>

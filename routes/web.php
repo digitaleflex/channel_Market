@@ -58,14 +58,14 @@ Route::middleware('auth')->group(function () {
 });
 
 // chariow return URL
-Route::get('/payment/chariow/return/{order}', [PaymentController::class, 'chariowReturn'])->name('payment.chariow.return');
+Route::get('/payment/chariow/return/{order:download_token}', [PaymentController::class, 'chariowReturn'])->name('payment.chariow.return');
 Route::post('/payment/chariow/webhook', [PaymentController::class, 'chariowWebhook'])->name('payment.chariow.webhook');
 
 // Deployment Webhook
 Route::post('/webhook/deploy', [DeploymentWebhookController::class, 'handle'])->name('webhook.deploy');
 
 // Payment success page (public fallback)
-Route::get('/payment/success/{order}', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/success/{order:download_token}', [PaymentController::class, 'success'])->name('payment.success');
 
 // Secure download via token
 Route::get('/download/{token}', [DownloadController::class, 'downloadByToken'])

@@ -49,7 +49,7 @@ class PaymentController extends Controller
 
         try {
             $productId = $this->resolveChariowProductId($product);
-            $redirectUrl = route('payment.chariow.return', ['order' => $order->id]).'?sale='.urlencode('{sale_id}');
+            $redirectUrl = route('payment.chariow.return', ['order' => $order->download_token]).'?sale='.urlencode('{sale_id}');
 
             $paymentData = [
                 'product_id' => $productId,
@@ -87,6 +87,7 @@ class PaymentController extends Controller
                 ]);
 
                 ActivityLogger::log('order_success', "Nouvelle vente de {$order->amount} CFA pour le produit : {$order->product->title}", $order);
+                \Illuminate\Support\Facades\Mail::to($order->client_email)->send(new \App\Mail\OrderConfirmationMail($order));
 
                 if (auth()->check()) {
                     return redirect('/dashboard')
@@ -140,7 +141,7 @@ class PaymentController extends Controller
     /**
      * Return URL after chariow checkout.
      */
-    public function chariowReturn(Request $request, Order $order)
+    public function chariowReturn(Request $request, Order $order, ChariowService $chariow)
     {
         $saleId = $request->query('sale');
 
@@ -148,6 +149,23 @@ class PaymentController extends Controller
             return redirect()
                 ->route('products.show', $order->product_id)
                 ->with('error', 'Retour paiement invalide.');
+        }
+
+        if ($order->status !== 'success') {
+            try {
+                $verification = $chariow->verifyPayment($saleId);
+                $status = strtolower($verification['status'] ?? '');
+
+                if (in_array($status, ['success', 'paid', 'approved', 'completed'], true)) {
+                    $order->update(['status' => 'success', 'transaction_id' => $saleId]);
+                    ActivityLogger::log('order_success', "Nouvelle vente de {$order->amount} CFA pour le produit : {$order->product->title}", $order);
+                    \Illuminate\Support\Facades\Mail::to($order->client_email)->send(new \App\Mail\OrderConfirmationMail($order));
+                } elseif (in_array($status, ['failed', 'cancelled', 'refused', 'expired'], true)) {
+                    $order->update(['status' => 'failed', 'transaction_id' => $saleId]);
+                }
+            } catch (\Exception $e) {
+                Log::error('Erreur vérification Chariow', ['sale_id' => $saleId, 'error' => $e->getMessage()]);
+            }
         }
 
         if ($order->status === 'success') {
@@ -162,7 +180,7 @@ class PaymentController extends Controller
 
         return redirect()
             ->route('products.show', $order->product_id)
-            ->with('success', 'Votre paiement est en cours de confirmation. Vous recevrez l’accès dès que la transaction sera validée.');
+            ->with('error', 'Votre paiement n\'a pas pu être confirmé ou a été refusé.');
     }
 
     /**
@@ -198,6 +216,7 @@ class PaymentController extends Controller
             if ($order->status !== 'success') {
                 $order->update(['status' => 'success', 'transaction_id' => $paymentId]);
                 ActivityLogger::log('order_success', "Nouvelle vente de {$order->amount} CFA pour le produit : {$order->product->title}", $order);
+                \Illuminate\Support\Facades\Mail::to($order->client_email)->send(new \App\Mail\OrderConfirmationMail($order));
             }
         } elseif (in_array($status, ['failed', 'cancelled', 'refused', 'expired'], true)) {
             $order->update(['status' => 'failed', 'transaction_id' => $paymentId]);
