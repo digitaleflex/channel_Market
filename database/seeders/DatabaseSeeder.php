@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@channelmarket.net'],
             [
                 'name' => 'Admin Channel Market',
-                'password' => bcrypt('password'), // A changer impérativement en production
+                'password' => bcrypt('CM_Secure_Admin987!'),
                 'is_admin' => true,
             ]
         );
