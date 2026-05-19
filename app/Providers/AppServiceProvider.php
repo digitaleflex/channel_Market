@@ -24,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.env') === 'production') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
         Storage::extend('google', function ($app, $config) {
             $client = new Client;
             $credentials = $config['serviceAccountCredentials'] ?? '';
