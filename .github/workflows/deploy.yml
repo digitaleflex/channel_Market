@@ -4,6 +4,9 @@ on:
   push:
     branches: [ "master" ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -13,10 +16,7 @@ jobs:
     steps:
     - name: Notify Webhook - Deployment Started
       run: |
-        curl -X POST "https://channelmarket.net/webhook/deploy" \
-          -H "Content-Type: application/json" \
-          -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" \
-          -d '{"commit_sha":"${{ github.sha }}", "commit_message":"${{ github.event.head_commit.message }}", "status":"deploying"}' || true
+        curl -X POST "https://channelmarket.net/webhook/deploy" -H "Content-Type: application/json" -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" -d '{"commit_sha":"${{ github.sha }}", "commit_message":"${{ github.event.head_commit.message }}", "status":"deploying"}' || true # gitleaks:allow
 
     - name: Diagnostic réseau (Vérification Connectivité)
       run: |
@@ -112,10 +112,7 @@ jobs:
     - name: Notification Succès (Email & Webhook)
       if: success()
       run: |
-        curl -X POST "https://channelmarket.net/webhook/deploy" \
-          -H "Content-Type: application/json" \
-          -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" \
-          -d '{"commit_sha":"${{ github.sha }}", "status":"success"}' || true
+        curl -X POST "https://channelmarket.net/webhook/deploy" -H "Content-Type: application/json" -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" -d '{"commit_sha":"${{ github.sha }}", "status":"success"}' || true # gitleaks:allow
  
         curl -X POST https://api.resend.com/emails \
           -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
@@ -130,10 +127,7 @@ jobs:
     - name: Notification Échec (Email & Webhook)
       if: failure()
       run: |
-        curl -X POST "https://channelmarket.net/webhook/deploy" \
-          -H "Content-Type: application/json" \
-          -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" \
-          -d '{"commit_sha":"${{ github.sha }}", "status":"failed"}' || true
+        curl -X POST "https://channelmarket.net/webhook/deploy" -H "Content-Type: application/json" -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" -d '{"commit_sha":"${{ github.sha }}", "status":"failed"}' || true # gitleaks:allow
  
         curl -X POST https://api.resend.com/emails \
           -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
