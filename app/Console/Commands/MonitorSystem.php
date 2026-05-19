@@ -41,12 +41,10 @@ class MonitorSystem extends Command
         if (! empty($errors)) {
             $message = implode("\n", $errors);
 
-            Mail::to(config('mail.from.address'))
-                ->cc('elfridayemadje5@gmail.com')  // Ajout du CC demandé
-                ->bcc('digitaleflex@gmail.com')   // Garde le BCC monitoring
-                ->send(new SystemAlertMail($message, $context));
-
-            $this->error('Problèmes détectés ! Alerte envoyée à digitaleflex@gmail.com');
+            $adminEmails = explode(',', env('ADMIN_NOTIFICATION_EMAILS', 'digitaleflex@gmail.com,elfridayemadje5@gmail.com'));
+            Mail::to($adminEmails)->send(new SystemAlertMail($message, $context));
+ 
+            $this->error('Problèmes détectés ! Alerte envoyée aux administrateurs.');
         } else {
             $this->info('Système en bonne santé.');
         }

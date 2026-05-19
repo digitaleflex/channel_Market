@@ -52,7 +52,7 @@ class ActivityLogger
             ]);
 
             // Notify administrators
-            $adminEmails = ['elfridayemadje5@gmail.com', 'digitaleflex@gmail.com'];
+            $adminEmails = explode(',', env('ADMIN_NOTIFICATION_EMAILS', 'digitaleflex@gmail.com,elfridayemadje5@gmail.com'));
             Mail::to($adminEmails)->send(new AdminActivityAlertMail($log));
         } catch (\Throwable $e) {
             Log::error('ActivityLogger failed: '.$e->getMessage(), [
