@@ -5,7 +5,7 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 $res = curl_exec($ch);
 if ($res === false) {
-    echo 'ERROR: ' . curl_error($ch) . PHP_EOL;
+    echo 'ERROR: '.curl_error($ch).PHP_EOL;
 } else {
     echo $res;
 }
