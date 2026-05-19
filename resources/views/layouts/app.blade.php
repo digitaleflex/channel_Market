@@ -129,6 +129,16 @@
                                 <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                                 <span x-show="!sidebarCollapsed" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="truncate">Déploiements & Logs</span>
                             </a>
+
+                            <!-- Cartographie de Flux -->
+                            <a href="{{ route('admin.workflows.index') }}" 
+                               title="Cartographie de Flux"
+                               class="nav-sidebar-link transition-all duration-300"
+                               :class="sidebarCollapsed ? 'justify-center px-4' : 'px-5 gap-4 {{ request()->routeIs('admin.workflows.*') ? 'active' : '' }}'"
+                               class="{{ request()->routeIs('admin.workflows.*') ? 'active' : '' }}">
+                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                <span x-show="!sidebarCollapsed" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="truncate">Cartographie de Flux</span>
+                            </a>
                         </nav>
 
                         <!-- Profile and Logout Bottom Section -->
