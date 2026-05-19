@@ -87,6 +87,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 
     Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
+    Route::get('/workflows', [ActivityController::class, 'workflows'])->name('workflows.index');
+    Route::post('/workflows/run-backup', [ActivityController::class, 'runBackup'])->name('workflows.run-backup');
+    Route::post('/workflows/run-monitor', [ActivityController::class, 'runMonitor'])->name('workflows.run-monitor');
 });
 
 require __DIR__.'/auth.php';

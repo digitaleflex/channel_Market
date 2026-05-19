@@ -35,8 +35,11 @@
                         <x-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.index')" class="text-sm font-bold">
                             {{ __('Tracking') }}
                         </x-nav-link>
-                        <x-nav-link :href="route('admin.activity.index')" :active="request()->routeIs('admin.activity.*')" class="text-sm font-bold">
+                        <x-nav-link :href="route('admin.activity.index')" :active="request()->routeIs('admin.activity.index')" class="text-sm font-bold">
                             {{ __('Évolution') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.workflows.index')" :active="request()->routeIs('admin.workflows.index')" class="text-sm font-bold">
+                            {{ __('Cartographie') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -107,8 +110,11 @@
                 <x-responsive-nav-link :href="route('admin.settings.index')" :active="request()->routeIs('admin.settings.index')" class="font-bold">
                     {{ __('Tracking & Pixels') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('admin.activity.index')" :active="request()->routeIs('admin.activity.*')" class="font-bold">
+                <x-responsive-nav-link :href="route('admin.activity.index')" :active="request()->routeIs('admin.activity.index')" class="font-bold">
                     {{ __('Évolution & Alertes') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.workflows.index')" :active="request()->routeIs('admin.workflows.index')" class="font-bold">
+                    {{ __('Cartographie de Flux') }}
                 </x-responsive-nav-link>
             @endif
         </div>
