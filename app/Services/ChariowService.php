@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Http;
 class ChariowService
 {
     protected string $apiKey = '';
+
     protected string $apiUrl = '';
+
     protected string $webhookSecret = '';
 
     public function __construct()
@@ -20,7 +22,7 @@ class ChariowService
 
     public function initPayment(array $payload): array
     {
-        if (!$this->apiKey) {
+        if (! $this->apiKey) {
             throw new \RuntimeException('Chariow API key is not configured.');
         }
 
@@ -35,7 +37,7 @@ class ChariowService
 
     public function verifyPayment(string $paymentId): array
     {
-        if (!$this->apiKey) {
+        if (! $this->apiKey) {
             throw new \RuntimeException('Chariow API key is not configured.');
         }
 
@@ -50,7 +52,7 @@ class ChariowService
 
     public function validateWebhook(Request $request): bool
     {
-        if (!$this->webhookSecret) {
+        if (! $this->webhookSecret) {
             return false;
         }
 
