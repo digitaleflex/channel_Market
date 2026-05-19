@@ -74,7 +74,7 @@ class BackupDatabase extends Command
             $this->error($errorMsg);
 
             // Envoi de l'alerte par email
-            $adminEmails = explode(',', env('ADMIN_NOTIFICATION_EMAILS', 'digitaleflex@gmail.com,elfridayemadje5@gmail.com'));
+            $adminEmails = array_filter(explode(',', env('ADMIN_NOTIFICATION_EMAILS'))) ?: ['digitaleflex@gmail.com', 'elfridayemadje5@gmail.com'];
             Mail::to($adminEmails)
                 ->send(new SystemAlertMail($errorMsg, ['Task' => 'Database Backup']));
         }

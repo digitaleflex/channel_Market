@@ -41,7 +41,7 @@ class MonitorSystem extends Command
         if (! empty($errors)) {
             $message = implode("\n", $errors);
 
-            $adminEmails = explode(',', env('ADMIN_NOTIFICATION_EMAILS', 'digitaleflex@gmail.com,elfridayemadje5@gmail.com'));
+            $adminEmails = array_filter(explode(',', env('ADMIN_NOTIFICATION_EMAILS'))) ?: ['digitaleflex@gmail.com', 'elfridayemadje5@gmail.com'];
             Mail::to($adminEmails)->send(new SystemAlertMail($message, $context));
  
             $this->error('Problèmes détectés ! Alerte envoyée aux administrateurs.');

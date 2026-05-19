@@ -237,7 +237,7 @@ return [
         'notifiable' => Notifiable::class,
 
         'mail' => [
-            'to' => explode(',', env('ADMIN_NOTIFICATION_EMAILS', 'digitaleflex@gmail.com,elfridayemadje5@gmail.com')),
+            'to' => array_filter(explode(',', env('ADMIN_NOTIFICATION_EMAILS'))) ?: ['digitaleflex@gmail.com', 'elfridayemadje5@gmail.com'],
 
             'from' => [
                 'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
