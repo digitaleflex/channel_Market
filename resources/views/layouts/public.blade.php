@@ -148,11 +148,8 @@
                         La plateforme numéro un pour vos produits digitaux premium. Accédez à des ressources exclusives instantanément.
                     </p>
                     <div class="flex gap-4">
-                        <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-600 hover:text-white transition-all duration-300">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
-                        </a>
-                        <a href="#" class="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-600 hover:text-white transition-all duration-300">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.332 3.608 1.308.975.975 1.245 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.063 1.366-.333 2.633-1.308 3.608-.975.975-2.242 1.245-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.063-2.633-.333-3.608-1.308-.975-.975-1.245-2.242-1.308-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.332-2.633 1.308-3.608.975-.975 2.242-1.245 3.608-1.308 1.266-.058 1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-1.61.074-2.71.332-3.67 1.292-.96.96-1.218 2.06-1.292 3.67-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.074 1.61.332 2.71 1.292 3.67.96.96 2.06 1.218 3.67 1.292 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c1.61-.074 2.71-.332 3.67-1.292.96-.96 1.218-2.06 1.292-3.67.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.074-1.61-.332-2.71-1.292-3.67-.96-.96-2.06-1.218-3.67-1.292-1.28-.058-1.688-.072-4.947-.072z"/></svg>
+                        <a href="https://www.facebook.com/profile.php?id=61588294455790" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-600 hover:text-white transition-all duration-300" title="Facebook">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82V14.706H9.692V11.13h3.128V8.414c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.464.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.312h3.587l-.467 3.576h-3.12V24h6.116C23.407 24 24 23.407 24 22.676V1.325C24 .593 23.407 0 22.675 0z"/></svg>
                         </a>
                     </div>
                 </div>
@@ -169,8 +166,8 @@
                 <div class="md:col-span-3">
                     <h4 class="font-black text-slate-900 mb-8 uppercase text-xs tracking-[0.2em]">Support</h4>
                     <ul class="space-y-4">
-                        <li><a href="#" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Centre d'aide</a></li>
-                        <li><a href="#" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Contact WhatsApp</a></li>
+                        <li><a href="mailto:mahougnonbalaam@gmail.com" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Centre d'aide</a></li>
+                        <li><a href="mailto:mahougnonbalaam@gmail.com" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">mahougnonbalaam@gmail.com</a></li>
                         <li><a href="#" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Politique de remboursement</a></li>
                     </ul>
                 </div>
@@ -179,7 +176,9 @@
             <div class="mt-20 pt-10 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
                 <p class="text-slate-400 text-sm font-bold tracking-tight">&copy; {{ date('Y') }} Channel Market. Built with Excellence.</p>
                 <div class="flex items-center gap-8">
-                    <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Secured by Charriow</span>
+                    <ul>
+                    <li><a href="https://www.linkedin.com/in/elfridamelvinefleurs%C3%A8djro-yemadje/"><span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Developp by Elfrida YEMADJE
+                    </span></a></li> </ul>
                     <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Premium Marketplace</span>
                 </div>
             </div>
