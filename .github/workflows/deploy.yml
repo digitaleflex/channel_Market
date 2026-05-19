@@ -1,18 +1,65 @@
-name: Deployment
+name: CI/CD & Deployment
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "main" ]
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
-  deploy:
+  test:
+    name: 🧪 Run Tests & Code Quality
     runs-on: ubuntu-latest
-    # Le déploiement ne se lance que si les tests (job laravel-tests du workflow CI) passent
-    # Note: Pour une dépendance stricte entre fichiers, on utilise workflow_run.
-    # Ici, on part du principe que ce workflow est autonome ou déclenché manuellement/après merge.
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: mbstring, xml, ctype, iconv, mysql, bcmath, gd, intl
+        coverage: none
+
+    - name: Install Composer Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Generate Application Key
+      run: php artisan key:generate
+
+    - name: Directory Permissions
+      run: chmod -R 777 storage bootstrap/cache
+
+    - name: Run Code Style Checks (Pint)
+      run: ./vendor/bin/pint --test
+
+    - name: Execute PHPUnit Tests
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: ":memory:"
+      run: php artisan test
+
+    - name: Notify on CI Failure (Email)
+      if: failure()
+      run: |
+        curl -X POST https://api.resend.com/emails \
+          -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "from": "noreply@channelmarket.net",
+            "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com"],
+            "subject": "🚨 ÉCHEC des Tests - Déploiement Annulé",
+            "html": "<h3>Attention !</h3><p>Le déploiement de <b>Channel Market</b> a été <b>annulé</b> car les tests automatisés ou la qualité du code ont échoué.</p><p><b>Auteur :</b> ${{ github.event.head_commit.author.name }} (${{ github.event.head_commit.author.email }})</p><p><b>Message de commit :</b> ${{ github.event.head_commit.message }}</p><p><b>Branche :</b> ${{ github.ref_name }}</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions\">Voir les détails de l erreur sur GitHub Actions</a></p>"
+          }'
+
+  deploy:
+    name: 🚀 Deploy to VPS
+    runs-on: ubuntu-latest
+    needs: [test]
     steps:
     - name: Notify Webhook - Deployment Started
       run: |
@@ -35,26 +82,22 @@ jobs:
         timeout: 60s
         debug: true
         script: |
-          # S'assurer que le dossier existe et s'y déplacer
           mkdir -p ${{ secrets.VPS_PATH }}
           cd ${{ secrets.VPS_PATH }}
           
-          # Sauvegarder le commit actuel pour un éventuel rollback
           PREVIOUS_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "")
           echo "Dernier commit stable : $PREVIOUS_COMMIT"
 
-          # Mise à jour du code depuis la branche master (unique source de vérité)
           if [ ! -d ".git" ]; then
             echo "Premier déploiement : Clonage du projet..."
             git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git .
             git remote set-url origin https://github.com/${{ github.repository }}.git
           else
-            echo "Mise à jour du code existant pour la branche master..."
+            echo "Mise à jour du code existant pour la branche ${{ github.ref_name }}..."
             git fetch origin
-            git reset --hard origin/master
+            git reset --hard origin/${{ github.ref_name }}
           fi
           
-          # Nettoyage et arrêt propre pour éviter les conflits de conteneurs orphelins
           echo "Arrêt propre des conteneurs existants et nettoyage des conflits..."
           docker compose down --remove-orphans || true
           docker container prune -f
@@ -69,32 +112,26 @@ jobs:
             exit 1
           fi
           
-          # Extraire les assets compilés (CSS/JS) depuis le conteneur vers l'hôte pour Nginx
           echo "Extraction des assets compilés (CSS/JS)..."
           docker cp channel-market-app-1:/var/www/public/build ./public/
           chmod -R 755 public/build
  
-          # Fix Permissions & Folders
           docker compose exec -T --user root app mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions bootstrap/cache
           docker compose exec -T --user root app chmod -R 777 storage bootstrap/cache
           docker compose exec -T --user root app chown -R www-data:www-data storage bootstrap/cache
           
-          # Optimisations Laravel
           docker compose exec -T app php artisan storage:link --force
           docker compose exec -T app php artisan migrate --force
           docker compose exec -T app php artisan config:cache
           docker compose exec -T app php artisan route:cache
           docker compose exec -T app php artisan view:cache
           
-          # Nettoyage des images inutilisées
           docker image prune -f
           
-          # --- VERIFICATION DE SANTE (Healthcheck) ---
           echo "Attente de la stabilisation des conteneurs (20s)..."
           sleep 20
           
           echo "Vérification de l'URL : https://channelmarket.net"
-          # On vérifie si le site répond un code 200 ou 302 (OK)
           HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://channelmarket.net)
           
           if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 302 ]; then
@@ -121,10 +158,10 @@ jobs:
             "from": "noreply@channelmarket.net",
             "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com"],
             "subject": "✅ Déploiement RÉUSSI - Channel Market",
-            "html": "<h3>Félicitations !</h3><p>Le déploiement de <b>Channel Market</b> sur ton VPS s est déroulé avec succès.</p><p>Version : ${{ github.sha }}</p><p><a href=\"https://channelmarket.net\">Accéder au site</a></p>"
+            "html": "<h3>Félicitations !</h3><p>Le déploiement de <b>Channel Market</b> sur ton VPS s est déroulé avec succès.</p><p>Version : ${{ github.sha }}</p><p><b>Auteur :</b> ${{ github.event.head_commit.author.name }}</p><p><b>Branche :</b> ${{ github.ref_name }}</p><p><a href=\"https://channelmarket.net\">Accéder au site</a></p>"
           }'
  
-    - name: Notification Échec (Email & Webhook)
+    - name: Notification Échec du Déploiement (Email & Webhook)
       if: failure()
       run: |
         curl -X POST "https://channelmarket.net/webhook/deploy" -H "Content-Type: application/json" -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" -d '{"commit_sha":"${{ github.sha }}", "status":"failed"}' || true # gitleaks:allow
@@ -135,6 +172,6 @@ jobs:
           -d '{
             "from": "noreply@channelmarket.net",
             "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com"],
-            "subject": "🚨 ERREUR de Déploiement - Channel Market",
-            "html": "<h3>Attention !</h3><p>Le déploiement de <b>Channel Market</b> a échoué.</p><p>Veuillez vérifier les logs sur GitHub Actions immédiatement.</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions\">Voir les erreurs</a></p>"
+            "subject": "🚨 ERREUR de Déploiement (SSH/Serveur) - Channel Market",
+            "html": "<h3>Attention !</h3><p>Le déploiement de <b>Channel Market</b> sur le serveur a échoué (erreur d installation ou d exécution Docker).</p><p>Le serveur a automatiquement exécuté un rollback vers la version stable précédente.</p><p><b>Auteur :</b> ${{ github.event.head_commit.author.name }}</p><p><b>Branche :</b> ${{ github.ref_name }}</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions\">Voir les logs d erreur sur GitHub</a></p>"
           }'
