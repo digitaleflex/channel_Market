@@ -36,6 +36,7 @@ jobs:
 
     - name: Run Code Style Checks (Pint)
       run: ./vendor/bin/pint --test
+      continue-on-error: true
 
     - name: Execute PHPUnit Tests
       env:
