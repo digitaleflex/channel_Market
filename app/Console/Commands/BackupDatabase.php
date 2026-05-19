@@ -43,7 +43,7 @@ class BackupDatabase extends Command
         // On utilise mysqldump
         // Comme on est dans Docker, on se connecte à l'hôte 'db'
         $command = sprintf(
-            'mysqldump --user=%s --password=%s --host=%s %s > %s',
+            'mysqldump --ssl-mode=DISABLED --user=%s --password=%s --host=%s %s > %s',
             config('database.connections.mysql.username'),
             config('database.connections.mysql.password'),
             config('database.connections.mysql.host'),
