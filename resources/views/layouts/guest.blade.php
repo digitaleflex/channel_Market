@@ -15,18 +15,18 @@
         <!-- Styles / Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-slate-900 antialiased bg-slate-50 selection:bg-indigo-100 selection:text-indigo-700 overflow-x-hidden">
+    <body class="font-sans text-slate-900 antialiased bg-slate-50 selection:bg-amber-100 selection:text-amber-700 overflow-x-hidden">
         <!-- Decorative Background Elements -->
         <div class="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
-            <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-indigo-500/5 blur-[120px] animate-pulse-slow"></div>
-            <div class="absolute top-[40%] -right-[10%] w-[35%] h-[35%] rounded-full bg-purple-500/5 blur-[100px] animate-pulse-slow" style="animation-delay: 2s;"></div>
-            <div class="absolute -bottom-[10%] left-[20%] w-[30%] h-[30%] rounded-full bg-blue-500/5 blur-[80px] animate-pulse-slow" style="animation-delay: 4s;"></div>
+            <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-amber-500/5 blur-[120px] animate-pulse-slow"></div>
+            <div class="absolute top-[40%] -right-[10%] w-[35%] h-[35%] rounded-full bg-orange-500/5 blur-[100px] animate-pulse-slow" style="animation-delay: 2s;"></div>
+            <div class="absolute -bottom-[10%] left-[20%] w-[30%] h-[30%] rounded-full bg-amber-500/5 blur-[80px] animate-pulse-slow" style="animation-delay: 4s;"></div>
         </div>
 
         <div class="min-h-screen flex flex-col items-center justify-center p-6 relative">
             <!-- Back to Home -->
             <div class="absolute top-8 left-8">
-                <a href="/" class="flex items-center gap-2 text-slate-400 hover:text-indigo-600 font-bold transition-colors group">
+                <a href="/" class="flex items-center gap-2 text-slate-500 hover:text-amber-600 font-bold transition-colors group">
                     <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     Boutique
                 </a>
@@ -35,7 +35,7 @@
             <div class="w-full sm:max-w-md">
                 <div class="mb-10 text-center">
                     <a href="/" class="inline-block group">
-                        <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform duration-500 rotate-3">
+                        <div class="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-200 group-hover:scale-110 transition-transform duration-500 rotate-3">
                             <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
                             </svg>
@@ -47,7 +47,7 @@
                     {{ $slot }}
                 </div>
 
-                <p class="mt-8 text-center text-slate-400 text-sm font-medium">
+                <p class="mt-8 text-center text-slate-500 text-sm font-medium">
                     &copy; {{ date('Y') }} {{ config('app.name') }}. Tous droits réservés.
                 </p>
             </div>

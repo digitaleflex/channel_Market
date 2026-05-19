@@ -44,8 +44,9 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 # Install Redis extension
 RUN pecl install redis && docker-php-ext-enable redis
 
-# OPcache Configuration
+# PHP Configuration
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY docker/php/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
 # Get Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

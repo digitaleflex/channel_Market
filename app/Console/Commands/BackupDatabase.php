@@ -43,7 +43,7 @@ class BackupDatabase extends Command
         // On utilise mysqldump
         // Comme on est dans Docker, on se connecte à l'hôte 'db'
         $command = sprintf(
-            'mysqldump --user=%s --password=%s --host=%s %s > %s',
+            'mysqldump --ssl-mode=DISABLED --user=%s --password=%s --host=%s %s > %s',
             config('database.connections.mysql.username'),
             config('database.connections.mysql.password'),
             config('database.connections.mysql.host'),
@@ -74,9 +74,8 @@ class BackupDatabase extends Command
             $this->error($errorMsg);
 
             // Envoi de l'alerte par email
-            Mail::to(config('mail.from.address'))
-                ->cc('elfridayemadje5@gmail.com')
-                ->bcc('digitaleflex@gmail.com')
+            $adminEmails = array_filter(explode(',', env('ADMIN_NOTIFICATION_EMAILS'))) ?: ['digitaleflex@gmail.com', 'elfridayemadje5@gmail.com'];
+            Mail::to($adminEmails)
                 ->send(new SystemAlertMail($errorMsg, ['Task' => 'Database Backup']));
         }
     }

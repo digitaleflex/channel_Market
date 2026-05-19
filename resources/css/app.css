@@ -9,8 +9,8 @@
     --brand-accent: #f97316;
     --surface-light: #ffffff;
     --surface-dark: #0f172a;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
+    --text-main: #0f172a;
+    --text-muted: #475569;
   }
 
   html {
@@ -106,4 +106,145 @@
 .blur-blob {
   @apply absolute rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse;
 }
+
+/* ==========================================================================
+   WARM PREMIUM E-COMMERCE DASHBOARD SYSTEM
+   ========================================================================== */
+.premium-dashboard {
+  background-color: #faf9f6 !important;
+  color: #0c0f17 !important;
+}
+
+.premium-dashboard .card-cyber {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.06);
+  box-shadow: 0 16px 40px -10px rgba(139, 92, 26, 0.06), 0 1px 3px rgba(0, 0, 0, 0.01);
+  border-radius: 24px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-dashboard .card-cyber:hover {
+  transform: translateY(-2px);
+  border-color: rgba(245, 158, 11, 0.25);
+  box-shadow: 0 25px 50px -12px rgba(245, 158, 11, 0.12), 0 0 20px rgba(245, 158, 11, 0.02);
+}
+
+.premium-dashboard .input-cyber {
+  background: #ffffff;
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  color: #0c0f17;
+  border-radius: 16px;
+  padding: 14px 18px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-dashboard .input-cyber:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.12);
+  background: #ffffff;
+}
+
+.premium-dashboard .btn-cyber-primary {
+  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  color: #ffffff;
+  font-weight: 800;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.2);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.premium-dashboard .btn-cyber-primary:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.35);
+  transform: translateY(-1px);
+}
+
+.premium-dashboard .btn-cyber-secondary {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  color: #334155;
+  font-weight: 700;
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.premium-dashboard .btn-cyber-secondary:hover {
+  background: #f8fafc;
+  border-color: rgba(203, 213, 225, 1);
+  color: #0f172a;
+}
+
+.premium-dashboard .nav-link-cyber {
+  color: #475569;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 14px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid transparent;
+}
+
+.premium-dashboard .nav-link-cyber:hover {
+  color: #0f172a;
+  background: rgba(245, 158, 11, 0.04);
+}
+
+.premium-dashboard .nav-link-cyber.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  box-shadow: 0 6px 15px rgba(245, 158, 11, 0.25);
+}
+
+.premium-dashboard .nav-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  color: #475569;
+  font-weight: 700;
+  padding: 14px 20px;
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid transparent;
+}
+
+.premium-dashboard .nav-sidebar-link:hover {
+  color: #0f172a;
+  background: rgba(245, 158, 11, 0.04);
+}
+
+.premium-dashboard .nav-sidebar-link.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  box-shadow: 0 6px 15px rgba(245, 158, 11, 0.25);
+}
+
+
+.premium-dashboard .text-main {
+  color: #0c0f17 !important;
+}
+
+.premium-dashboard .text-muted {
+  color: #475569 !important;
+}
+
+.premium-dashboard .table-header {
+  background: rgba(245, 158, 11, 0.02);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.06);
+}
+
+.premium-dashboard .table-row {
+  transition: background-color 0.3s ease;
+}
+
+.premium-dashboard .table-row:hover {
+  background-color: rgba(245, 158, 11, 0.015) !important;
+}
+
+
 

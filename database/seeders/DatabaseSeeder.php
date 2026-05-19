@@ -21,10 +21,10 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::updateOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'admin@channelmarket.net'],
             [
-                'name' => 'Admin User',
-                'password' => bcrypt('password'),
+                'name' => 'Admin Channel Market',
+                'password' => bcrypt('CM_Secure_Admin987!'),
                 'is_admin' => true,
             ]
         );
