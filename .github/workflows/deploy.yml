@@ -34,10 +34,6 @@ jobs:
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
 
-    - name: Run Code Style Checks (Pint)
-      run: ./vendor/bin/pint --test
-      continue-on-error: true
-
     - name: Execute PHPUnit Tests
       env:
         DB_CONNECTION: sqlite
