@@ -35,7 +35,8 @@ class AppServiceProvider extends ServiceProvider
             
             $client->addScope(Drive::DRIVE);
             
-            $adapter = new GoogleDriveAdapter($client, $config['folderId'] ?? '/');
+            $service = new Drive($client);
+            $adapter = new GoogleDriveAdapter($service, $config['folderId'] ?? '/');
             
             return new Filesystem($adapter);
         });
