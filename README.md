@@ -115,7 +115,7 @@ Modifiez le fichier `.env` avec vos paramètres :
 
 ```env
 APP_NAME="Channel Market"
-APP_URL=http://localhost:8000
+APP_URL=http://localhost:8080
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -179,7 +179,7 @@ php artisan serve
 npm run dev   # dans un autre terminal
 ```
 
-Accédez à l'application sur [http://localhost:8000](http://localhost:8000)
+Accédez à l'application sur [http://localhost:8080](http://localhost:8080)
 
 ---
 

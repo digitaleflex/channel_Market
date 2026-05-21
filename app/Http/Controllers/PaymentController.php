@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Product;
-use App\Services\chariowService;
+use App\Services\ChariowService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -22,13 +22,13 @@ class PaymentController extends Controller
     /**
      * Initializes chariow payment and redirects to the chariow checkout page.
      */
-    public function init(Request $request, Product $product, chariowService $chariow)
+    public function init(Request $request, Product $product, ChariowService $chariow)
     {
         $validated = $request->validate([
             'email' => ['required', 'email'],
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
-            'phone' => ['required', 'string', 'max:30'],
+            'phone' => ['required', 'string', 'max:30', 'regex:/^\+[0-9 ]{6,25}$/'],
         ]);
 
         $amount = (int) round((float) $product->price);
@@ -140,7 +140,7 @@ class PaymentController extends Controller
     /**
      * chariow webhook endpoint.
      */
-    public function chariowWebhook(Request $request, chariowService $chariow)
+    public function chariowWebhook(Request $request, ChariowService $chariow)
     {
         $payload = $request->json()->all();
         $event = $payload['event'] ?? '';
@@ -184,17 +184,21 @@ class PaymentController extends Controller
 
     private function normalizePhone(string $phone): array
     {
-        $digits = preg_replace('/[^0-9]+/', '', $phone);
+        $trimmed = trim($phone);
+        $digits = preg_replace('/[^0-9]+/', '', $trimmed);
         $countryCode = config('services.chariow.default_country_code', 'FR');
+        $nationalNumber = $digits;
 
-        if (str_starts_with(trim($phone), '+')) {
-            if (preg_match('/^\+([0-9]{1,3})/', trim($phone), $matches)) {
-                $countryCode = $this->countryCodeFromDialCode($matches[1]) ?? $countryCode;
+        if (str_starts_with($trimmed, '+')) {
+            if (preg_match('/^\+([0-9]{1,3})/', $trimmed, $matches)) {
+                $dialCode = $matches[1];
+                $countryCode = $this->countryCodeFromDialCode($dialCode) ?? $countryCode;
+                $nationalNumber = preg_replace('/^'.preg_quote($dialCode, '/').'/', '', $digits);
             }
         }
 
         return [
-            'number' => $digits,
+            'number' => $nationalNumber,
             'country_code' => $countryCode,
         ];
     }
@@ -202,15 +206,63 @@ class PaymentController extends Controller
     private function countryCodeFromDialCode(string $dialCode): ?string
     {
         $map = [
-            '33' => 'FR',
-            '229' => 'BJ',
+            '20' => 'EG',
+            '211' => 'SS',
+            '212' => 'MA',
+            '213' => 'DZ',
+            '216' => 'TN',
+            '218' => 'LY',
+            '220' => 'GM',
+            '221' => 'SN',
+            '222' => 'MR',
+            '223' => 'ML',
+            '224' => 'GN',
             '225' => 'CI',
-            '237' => 'CM',
-            '243' => 'CD',
             '226' => 'BF',
+            '227' => 'NE',
             '228' => 'TG',
+            '229' => 'BJ',
+            '230' => 'MU',
+            '231' => 'LR',
+            '232' => 'SL',
+            '233' => 'GH',
+            '234' => 'NG',
+            '235' => 'TD',
             '236' => 'CF',
+            '237' => 'CM',
+            '238' => 'CV',
+            '239' => 'ST',
+            '240' => 'GQ',
             '241' => 'GA',
+            '242' => 'CG',
+            '243' => 'CD',
+            '244' => 'AO',
+            '245' => 'GW',
+            '246' => 'IO',
+            '248' => 'SC',
+            '249' => 'SD',
+            '250' => 'RW',
+            '251' => 'ET',
+            '252' => 'SO',
+            '253' => 'DJ',
+            '254' => 'KE',
+            '255' => 'TZ',
+            '256' => 'UG',
+            '257' => 'BI',
+            '258' => 'MZ',
+            '260' => 'ZM',
+            '261' => 'MG',
+            '262' => 'RE',
+            '263' => 'ZW',
+            '264' => 'NA',
+            '265' => 'MW',
+            '266' => 'LS',
+            '267' => 'BW',
+            '268' => 'SZ',
+            '269' => 'KM',
+            '27' => 'ZA',
+            '290' => 'SH',
+            '291' => 'ER',
         ];
 
         return $map[$dialCode] ?? null;
