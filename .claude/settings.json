@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git remote:*)",
+      "Bash(ssh -i ~/.ssh/id_ed25519 -T git@github.com)",
+      "Bash(ssh -i ~/.ssh/id_github_deploy -T git@github.com)",
+      "Bash(sudo ls:*)",
+      "Bash(sudo cat:*)",
+      "Bash(sudo ssh-keygen:*)"
+    ]
+  }
+}
