@@ -40,6 +40,8 @@ return [
         'api_url' => env('CHARIOW_API_URL', 'https://api.chariow.com'),
         'webhook_secret' => env('CHARIOW_WEBHOOK_SECRET'),
         'default_country_code' => env('CHARIOW_DEFAULT_COUNTRY_CODE', 'FR'),
+        'generic_product_id' => env('CHARIOW_GENERIC_PRODUCT_ID'),
+        'webhook_secret' => env('CHARIOW_WEBHOOK_SECRET'),
     ],
 
 ];

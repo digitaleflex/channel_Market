@@ -17,5 +17,10 @@ class Product extends Model
         'image',
         'currency',
         'chariow_product_id',
+        'testimonials',
+    ];
+
+    protected $casts = [
+        'testimonials' => 'array',
     ];
 }

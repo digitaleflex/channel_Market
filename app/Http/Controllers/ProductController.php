@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -61,6 +60,7 @@ class ProductController extends Controller
             'drive_link' => 'required_if:product_type,link|nullable|url',
             'image_file' => 'required|image|max:2048',
             'chariow_product_id' => 'nullable|string|max:255',
+            'testimonials_files.*' => 'nullable|image|max:2048',
         ]);
 
         $filePath = null;
@@ -72,16 +72,22 @@ class ProductController extends Controller
 
         $imagePath = $request->file('image_file')->store('products', 'public');
 
-        $product = Product::create([
+        $testimonials = [];
+        if ($request->hasFile('testimonials_files')) {
+            foreach ($request->file('testimonials_files') as $file) {
+                $testimonials[] = $file->store('testimonials', 'public');
+            }
+        }
+
+        Product::create([
             'title' => $validated['title'],
             'description' => $validated['description'],
             'price' => $validated['price'],
             'file_path' => $filePath,
             'image' => $imagePath,
             'chariow_product_id' => $validated['chariow_product_id'] ?? null,
+            'testimonials' => $testimonials,
         ]);
-
-        ActivityLogger::log('product_created', "Création du produit : {$product->title}", $product);
 
         return redirect()->route('admin.products.index')->with('success', 'Produit créé avec succès !');
     }
@@ -110,6 +116,7 @@ class ProductController extends Controller
             'drive_link' => 'required_if:product_type,link|nullable|url',
             'image_file' => 'nullable|image|max:2048',
             'chariow_product_id' => 'nullable|string|max:255',
+            'testimonials_files.*' => 'nullable|image|max:2048',
         ]);
 
         // Handle digital product file/link
@@ -137,14 +144,21 @@ class ProductController extends Controller
             $product->image = $request->file('image_file')->store('products', 'public');
         }
 
+        // Handle testimonials
+        if ($request->hasFile('testimonials_files')) {
+            $testimonials = $product->testimonials ?? [];
+            foreach ($request->file('testimonials_files') as $file) {
+                $testimonials[] = $file->store('testimonials', 'public');
+            }
+            $product->testimonials = $testimonials;
+        }
+
         $product->title = $validated['title'];
         $product->description = $validated['description'];
         $product->price = $validated['price'];
         $product->chariow_product_id = $validated['chariow_product_id'] ?? null;
 
         $product->save();
-
-        ActivityLogger::log('product_updated', "Modification du produit : {$product->title}", $product);
 
         return redirect()->route('admin.products.index')->with('success', 'Produit mis à jour avec succès !');
     }
@@ -190,10 +204,7 @@ class ProductController extends Controller
             Storage::disk('public')->delete($product->image);
         }
 
-        $productTitle = $product->title;
         $product->delete();
-
-        ActivityLogger::log('product_deleted', "Suppression du produit : {$productTitle}");
 
         return redirect()->route('admin.products.index')->with('success', 'Produit supprimé avec succès !');
     }
