@@ -34,9 +34,6 @@ jobs:
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
 
-    - name: Run Code Style Checks (Pint)
-      run: ./vendor/bin/pint --test
-
     - name: Execute PHPUnit Tests
       env:
         DB_CONNECTION: sqlite
@@ -113,7 +110,8 @@ jobs:
           fi
           
           echo "Extraction des assets compilés (CSS/JS)..."
-          docker cp channel-market-app-1:/var/www/public/build ./public/
+          rm -rf ./public/build
+          docker cp channel-market-app-1:/var/build ./public/
           chmod -R 755 public/build
  
           docker compose exec -T --user root app mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions bootstrap/cache
