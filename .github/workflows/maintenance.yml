@@ -24,7 +24,6 @@ jobs:
           # Nettoyage Docker
           echo "Nettoyage des images Docker inutilisées..."
           docker image prune -af --filter "until=168h"
-          docker volume prune -f
           
           # Nettoyage Laravel (dans le conteneur app)
           echo "Nettoyage des logs Laravel (fichiers > 30 jours)..."
