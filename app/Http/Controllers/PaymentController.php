@@ -113,7 +113,7 @@ class PaymentController extends Controller
 
             return redirect()
                 ->route('checkout', $product)
-                ->with('error', "Erreur lors de l'initialisation du paiement : ".$e->getMessage());
+                ->with('error', "Erreur lors de l'initialisation du paiement : " . $e->getMessage());
         }
     }
 
