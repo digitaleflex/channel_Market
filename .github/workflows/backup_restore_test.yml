@@ -1,0 +1,84 @@
+name: 🔬 Monthly Backup Restore Test
+
+on:
+  schedule:
+    - cron: '0 10 1 * *' # Le 1er de chaque mois à 10h
+  workflow_dispatch:
+
+jobs:
+  restore-test:
+    name: 🔬 Test de Restauration Backup
+    runs-on: ubuntu-latest
+    steps:
+    - name: Test Restore via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      env:
+        RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USERNAME }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        port: ${{ secrets.VPS_SSH_PORT || 22 }}
+        envs: RESEND_API_KEY
+        timeout: 120s
+        script: |
+          cd ${{ secrets.VPS_PATH }}
+
+          echo "Recherche du dernier backup..."
+          LATEST_BACKUP=$(ls -t backups/db_backup_*.sql.gz 2>/dev/null | head -1)
+          if [ -z "$LATEST_BACKUP" ]; then
+            echo "ERREUR : Aucun backup trouvé dans backups/"
+            exit 1
+          fi
+          echo "Backup à tester : $LATEST_BACKUP"
+          BACKUP_SIZE=$(du -h "$LATEST_BACKUP" | cut -f1)
+
+          DB_PASSWORD=$(grep DB_PASSWORD .env | cut -d '=' -f2)
+          DB_NAME=$(grep DB_DATABASE .env | cut -d '=' -f2 | tr -d '\r')
+
+          echo "Décompression du backup..."
+          cp "$LATEST_BACKUP" /tmp/test_backup.sql.gz
+          gunzip -f /tmp/test_backup.sql.gz
+
+          echo "Démarrage d'un conteneur MySQL de test..."
+          docker run -d --name db_restore_test \
+            -e MYSQL_ROOT_PASSWORD="$DB_PASSWORD" \
+            -e MYSQL_DATABASE=test_restore \
+            mysql:8.0 --default-authentication-plugin=mysql_native_password
+
+          echo "Attente du démarrage MySQL (20s)..."
+          sleep 20
+
+          echo "Restauration du backup dans le conteneur de test..."
+          docker exec -i db_restore_test mysql -u root -p"$DB_PASSWORD" test_restore < /tmp/test_backup.sql
+
+          echo "Vérification — comptage des tables..."
+          TABLE_COUNT=$(docker exec db_restore_test mysql -u root -p"$DB_PASSWORD" -sN -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='test_restore';" 2>/dev/null)
+
+          echo "Nettoyage..."
+          docker rm -f db_restore_test || true
+          rm -f /tmp/test_backup.sql
+
+          if [ -z "$TABLE_COUNT" ] || [ "$TABLE_COUNT" -eq 0 ]; then
+            echo "🚨 ERREUR : Aucune table restaurée. Le backup est corrompu ou vide."
+            RESULT_STATUS="🚨 ÉCHEC"
+            RESULT_MSG="Le backup <b>$LATEST_BACKUP</b> semble corrompu — aucune table restaurée."
+            EXIT_CODE=1
+          else
+            echo "✅ Restauration réussie : $TABLE_COUNT tables restaurées depuis $LATEST_BACKUP ($BACKUP_SIZE)"
+            RESULT_STATUS="✅ SUCCÈS"
+            RESULT_MSG="Le backup <b>$LATEST_BACKUP</b> ($BACKUP_SIZE) a été restauré avec succès — <b>$TABLE_COUNT tables</b> vérifiées."
+            EXIT_CODE=0
+          fi
+
+          curl -s -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer $RESEND_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"from\": \"noreply@channelmarket.net\",
+              \"to\": [\"elfridayemadje5@gmail.com\", \"digitaleflex@gmail.com\"],
+              \"subject\": \"🔬 Test Backup Mensuel — $RESULT_STATUS\",
+              \"html\": \"<h3>Test de restauration mensuel</h3><p>$RESULT_MSG</p><p><b>Date :</b> $(date '+%d/%m/%Y')</p>\"
+            }"
+
+          exit $EXIT_CODE

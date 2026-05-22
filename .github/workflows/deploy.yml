@@ -119,6 +119,19 @@ jobs:
             git reset --hard origin/${{ github.ref_name }}
           fi
 
+          echo "Validation des variables d'environnement..."
+          MISSING_VARS=""
+          for VAR in APP_KEY APP_URL DB_HOST DB_DATABASE DB_PASSWORD; do
+            if ! grep -q "^$VAR=" .env 2>/dev/null || [ -z "$(grep "^$VAR=" .env | cut -d'=' -f2)" ]; then
+              MISSING_VARS="$MISSING_VARS $VAR"
+            fi
+          done
+          if [ -n "$MISSING_VARS" ]; then
+            echo "ERREUR : Variables manquantes dans .env :$MISSING_VARS"
+            exit 1
+          fi
+          echo "Variables d'environnement OK."
+
           echo "Vérification des migrations en attente..."
           PENDING=$(docker compose exec -T app php artisan migrate:status 2>/dev/null | grep "Pending" || true)
           if [ -n "$PENDING" ]; then
@@ -171,7 +184,7 @@ jobs:
 
           echo "Smoke tests (vérification des routes critiques)..."
           FAILED_ROUTES=""
-          for ROUTE in "/" "/login"; do
+          for ROUTE in "/" "/health" "/login"; do
             for i in $(seq 1 12); do
               STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://channelmarket.net$ROUTE")
               if [ "$STATUS" -eq 200 ] || [ "$STATUS" -eq 302 ]; then
@@ -197,7 +210,20 @@ jobs:
             exit 1
           fi
 
-          echo "✅ Tous les smoke tests passés. Déploiement terminé."
+          echo "✅ Tous les smoke tests passés."
+
+          echo "Surveillance des logs Laravel (30s)..."
+          sleep 30
+          ERROR_COUNT=$(docker compose exec -T app tail -n 100 storage/logs/laravel.log 2>/dev/null | grep -c "\[ERROR\]\|\[CRITICAL\]" || echo "0")
+          if [ "$ERROR_COUNT" -gt 5 ]; then
+            echo "🚨 ALERTE : $ERROR_COUNT erreurs critiques détectées dans les logs après deploy. Rollback..."
+            if [ -n "$PREVIOUS_COMMIT" ]; then
+              git reset --hard $PREVIOUS_COMMIT
+              DOCKER_BUILDKIT=1 docker compose up -d --build --remove-orphans
+            fi
+            exit 1
+          fi
+          echo "✅ Logs OK ($ERROR_COUNT erreurs). Déploiement terminé."
 
     - name: Notification Succès (Email & Webhook)
       if: success()

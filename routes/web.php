@@ -87,4 +87,36 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 });
 
+// Health check endpoint (used by CI/CD smoke tests)
+Route::get('/health', function () {
+    $checks = [];
+
+    // DB
+    try {
+        \DB::connection()->getPdo();
+        $checks['database'] = 'ok';
+    } catch (\Exception $e) {
+        $checks['database'] = 'fail';
+    }
+
+    // Cache
+    try {
+        \Cache::put('health_check', true, 5);
+        $checks['cache'] = \Cache::get('health_check') ? 'ok' : 'fail';
+    } catch (\Exception $e) {
+        $checks['cache'] = 'fail';
+    }
+
+    // Storage
+    $checks['storage'] = is_writable(storage_path()) ? 'ok' : 'fail';
+
+    $status = in_array('fail', $checks) ? 500 : 200;
+
+    return response()->json([
+        'status' => $status === 200 ? 'healthy' : 'degraded',
+        'checks' => $checks,
+        'timestamp' => now()->toIso8601String(),
+    ], $status);
+})->name('health');
+
 require __DIR__.'/auth.php';

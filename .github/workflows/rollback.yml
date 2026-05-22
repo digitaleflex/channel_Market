@@ -1,0 +1,93 @@
+name: 🔙 Manual Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: 'SHA du commit vers lequel rollback (laisser vide = commit précédent)'
+        required: false
+        default: ''
+      reason:
+        description: 'Raison du rollback'
+        required: true
+        default: 'Problème détecté en production'
+
+jobs:
+  rollback:
+    name: 🔙 Rollback Production
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - name: Rollback via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USERNAME }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        port: ${{ secrets.VPS_SSH_PORT || 22 }}
+        timeout: 120s
+        script: |
+          cd ${{ secrets.VPS_PATH }}
+
+          CURRENT_COMMIT=$(git rev-parse HEAD)
+          echo "Commit actuel : $CURRENT_COMMIT"
+
+          TARGET="${{ github.event.inputs.commit_sha }}"
+          if [ -z "$TARGET" ]; then
+            TARGET=$(git rev-parse HEAD~1)
+            echo "Aucun SHA fourni — rollback vers le commit précédent : $TARGET"
+          else
+            echo "Rollback vers le commit demandé : $TARGET"
+          fi
+
+          git fetch origin
+          if ! git cat-file -e "$TARGET^{commit}" 2>/dev/null; then
+            echo "ERREUR : SHA '$TARGET' introuvable dans le dépôt."
+            exit 1
+          fi
+
+          git reset --hard "$TARGET"
+
+          if ! DOCKER_BUILDKIT=1 docker compose up -d --build --remove-orphans; then
+            echo "ERREUR : Échec du build lors du rollback."
+            exit 1
+          fi
+
+          APP_CONTAINER=$(docker compose ps -q app)
+          if docker exec "$APP_CONTAINER" test -f /var/build/manifest.json 2>/dev/null; then
+            rm -rf ./public/build
+            docker cp "$APP_CONTAINER":/var/build ./public/
+            chmod -R 755 public/build
+          fi
+
+          docker compose exec -T app php artisan config:cache
+          docker compose exec -T app php artisan route:cache
+          docker compose exec -T app php artisan view:cache
+
+          echo "Vérification post-rollback..."
+          for i in $(seq 1 12); do
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://channelmarket.net/health)
+            if [ "$STATUS" -eq 200 ]; then
+              echo "✅ Rollback vers $TARGET réussi. Site opérationnel."
+              break
+            fi
+            sleep 5
+            if [ "$i" -eq 12 ]; then
+              echo "🚨 Site toujours en erreur après rollback."
+              exit 1
+            fi
+          done
+
+    - name: Notification Rollback (Email)
+      if: always()
+      run: |
+        STATUS_MSG="${{ job.status == 'success' && 'Rollback effectué avec succès' || 'ÉCHEC du rollback' }}"
+        curl -X POST https://api.resend.com/emails \
+          -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d "{
+            \"from\": \"noreply@channelmarket.net\",
+            \"to\": [\"elfridayemadje5@gmail.com\", \"digitaleflex@gmail.com\"],
+            \"subject\": \"🔙 Rollback — Channel Market\",
+            \"html\": \"<h3>$STATUS_MSG</h3><p><b>Raison :</b> ${{ github.event.inputs.reason }}</p><p><b>SHA cible :</b> ${{ github.event.inputs.commit_sha || 'commit précédent' }}</p><p><b>Déclenché par :</b> ${{ github.actor }}</p><p><a href='${{ github.server_url }}/${{ github.repository }}/actions'>Voir les logs</a></p>\"
+          }"

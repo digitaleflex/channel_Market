@@ -39,3 +39,30 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       continue-on-error: true
+
+    - name: SSL Certificate Expiry Check
+      run: |
+        DOMAIN="channelmarket.net"
+        EXPIRY=$(echo | openssl s_client -servername $DOMAIN -connect $DOMAIN:443 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
+        if [ -z "$EXPIRY" ]; then
+          echo "⚠️ Impossible de récupérer la date d'expiration SSL."
+          exit 0
+        fi
+        EXPIRY_EPOCH=$(date -d "$EXPIRY" +%s 2>/dev/null || date -j -f "%b %d %T %Y %Z" "$EXPIRY" +%s)
+        NOW_EPOCH=$(date +%s)
+        DAYS_LEFT=$(( (EXPIRY_EPOCH - NOW_EPOCH) / 86400 ))
+        echo "Certificat SSL expire le : $EXPIRY ($DAYS_LEFT jours restants)"
+        if [ "$DAYS_LEFT" -lt 14 ]; then
+          echo "🚨 ALERTE : Le certificat SSL expire dans $DAYS_LEFT jours !"
+          curl -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"from\": \"noreply@channelmarket.net\",
+              \"to\": [\"elfridayemadje5@gmail.com\", \"digitaleflex@gmail.com\"],
+              \"subject\": \"🚨 SSL expire dans ${DAYS_LEFT}j - Channel Market\",
+              \"html\": \"<h3>Alerte SSL</h3><p>Le certificat SSL de <b>channelmarket.net</b> expire dans <b>${DAYS_LEFT} jours</b>.</p><p>Renouvelle-le immédiatement.</p>\"
+            }"
+          exit 1
+        fi
+        echo "✅ SSL OK — $DAYS_LEFT jours restants."
