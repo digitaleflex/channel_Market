@@ -80,6 +80,7 @@ jobs:
     name: 🚀 Deploy to VPS
     runs-on: ubuntu-latest
     needs: [test]
+    environment: production
     steps:
     - name: Notify Webhook - Deployment Started
       run: |
@@ -118,12 +119,21 @@ jobs:
             git reset --hard origin/${{ github.ref_name }}
           fi
 
+          echo "Vérification des migrations en attente..."
+          PENDING=$(docker compose exec -T app php artisan migrate:status 2>/dev/null | grep "Pending" || true)
+          if [ -n "$PENDING" ]; then
+            echo "Migrations en attente détectées :"
+            echo "$PENDING"
+          else
+            echo "Aucune migration en attente."
+          fi
+
           echo "Build et redémarrage sans interruption de service..."
-          if ! docker compose up -d --build --remove-orphans; then
+          if ! DOCKER_BUILDKIT=1 docker compose up -d --build --remove-orphans; then
             echo "ERREUR : Échec du build Docker. Rollback vers $PREVIOUS_COMMIT..."
             if [ -n "$PREVIOUS_COMMIT" ]; then
               git reset --hard $PREVIOUS_COMMIT
-              docker compose up -d --build --remove-orphans
+              DOCKER_BUILDKIT=1 docker compose up -d --build --remove-orphans
             fi
             exit 1
           fi
@@ -159,25 +169,35 @@ jobs:
 
           docker image prune -f
 
-          echo "Vérification de santé du site (max 60s)..."
-          for i in $(seq 1 12); do
-            HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://channelmarket.net)
-            if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 302 ]; then
-              echo "✅ Site opérationnel (HTTP $HTTP_STATUS) après $((i * 5))s."
-              break
-            fi
-            echo "Tentative $i/12 — HTTP $HTTP_STATUS, nouvel essai dans 5s..."
-            sleep 5
-            if [ "$i" -eq 12 ]; then
-              echo "🚨 ERREUR CRITIQUE : Site répond $HTTP_STATUS après 60s. Rollback..."
-              if [ -n "$PREVIOUS_COMMIT" ]; then
-                git reset --hard $PREVIOUS_COMMIT
-                docker compose up -d --build --remove-orphans
-                echo "Rollback effectué vers $PREVIOUS_COMMIT."
+          echo "Smoke tests (vérification des routes critiques)..."
+          FAILED_ROUTES=""
+          for ROUTE in "/" "/login"; do
+            for i in $(seq 1 12); do
+              STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://channelmarket.net$ROUTE")
+              if [ "$STATUS" -eq 200 ] || [ "$STATUS" -eq 302 ]; then
+                echo "✅ $ROUTE → HTTP $STATUS"
+                break
               fi
-              exit 1
-            fi
+              if [ "$i" -eq 12 ]; then
+                echo "🚨 $ROUTE → HTTP $STATUS après 60s"
+                FAILED_ROUTES="$FAILED_ROUTES $ROUTE"
+              else
+                sleep 5
+              fi
+            done
           done
+
+          if [ -n "$FAILED_ROUTES" ]; then
+            echo "ERREUR CRITIQUE : Routes en échec :$FAILED_ROUTES. Rollback..."
+            if [ -n "$PREVIOUS_COMMIT" ]; then
+              git reset --hard $PREVIOUS_COMMIT
+              DOCKER_BUILDKIT=1 docker compose up -d --build --remove-orphans
+              echo "Rollback effectué vers $PREVIOUS_COMMIT."
+            fi
+            exit 1
+          fi
+
+          echo "✅ Tous les smoke tests passés. Déploiement terminé."
 
     - name: Notification Succès (Email & Webhook)
       if: success()

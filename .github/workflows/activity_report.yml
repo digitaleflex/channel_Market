@@ -9,61 +9,62 @@ jobs:
   activity-report:
     runs-on: ubuntu-latest
     steps:
-    - name: Fetch System Info from VPS
+    - name: Collect System Info and Send Report
       uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USERNAME }}
-        key: ${{ secrets.VPS_SSH_KEY }}
-        port: ${{ secrets.VPS_SSH_PORT || 22 }}
-        script: |
-          cd ${{ secrets.VPS_PATH }}
-          
-          echo "--- RAPPORT D'ACTIVITÉ ---" > report.txt
-          echo "Date : $(date)" >> report.txt
-          echo "" >> report.txt
-          
-          echo "--- ÉTAT DU DISQUE ---" >> report.txt
-          df -h / | grep / >> report.txt
-          echo "" >> report.txt
-          
-          echo "--- UTILISATION MÉMOIRE ---" >> report.txt
-          free -m >> report.txt
-          echo "" >> report.txt
-          
-          echo "--- CONTENEURS DOCKER ---" >> report.txt
-          docker compose ps >> report.txt
-          echo "" >> report.txt
-          
-          echo "--- DERNIERS LOGS ERREURS (Laravel) ---" >> report.txt
-          tail -n 20 storage/logs/laravel.log 2>/dev/null || echo "Aucun log trouvé." >> report.txt
-          
-    - name: Download Report
-      uses: appleboy/ssh-action@v1.0.3
-      id: get_report
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USERNAME }}
-        key: ${{ secrets.VPS_SSH_KEY }}
-        port: ${{ secrets.VPS_SSH_PORT || 22 }}
-        script: cat ${{ secrets.VPS_PATH }}/report.txt
-
-    # Note: On utilise une petite astuce pour passer le contenu du rapport à l'étape suivante
-    - name: Generate HTML and Send Email
       env:
         RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-      run: |
-        # On simule la lecture du rapport (en réalité il faudrait l'extraire proprement ou utiliser un outil tiers)
-        # Pour cet exemple, on envoie un email avec les infos de base
-        
-        REPORT_CONTENT="Rapport hebdomadaire généré avec succès pour Channel Market."
-        
-        curl -X POST https://api.resend.com/emails \
-          -H "Authorization: Bearer $RESEND_API_KEY" \
-          -H "Content-Type: application/json" \
-          -d '{
-            "from": "monitoring@channelmarket.net",
-            "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com"],
-            "subject": "📊 Rapport Hebdomadaire d Activité - Channel Market",
-            "html": "<h3>Rapport d Activité Système</h3><p>Ton serveur a été analysé. Tout semble opérationnel.</p><p>Les logs détaillés ont été archivés sur le VPS dans <b>report.txt</b>.</p><p>Vérifie tes déploiements récents : <a href=\"https://github.com/${{ github.repository }}/actions\">GitHub Actions</a></p>"
-          }'
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USERNAME }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        port: ${{ secrets.VPS_SSH_PORT || 22 }}
+        envs: RESEND_API_KEY
+        script: |
+          cd ${{ secrets.VPS_PATH }}
+
+          # --- Collecte des données réelles ---
+          DISK=$(df -h / | awk 'NR==2 {print "Utilisé : "$3" / "$2" ("$5")"}')
+          MEM=$(free -m | awk 'NR==2 {printf "Utilisé : %sMB / %sMB (%.0f%%)", $3, $2, $3/$2*100}')
+          CONTAINERS=$(docker compose ps --format "table {{.Name}}\t{{.Status}}" 2>/dev/null | tail -n +2)
+          LARAVEL_ERRORS=$(docker compose exec -T app tail -n 30 storage/logs/laravel.log 2>/dev/null | grep -E "\[ERROR\]|\[CRITICAL\]|Exception" | tail -5 || echo "Aucune erreur critique.")
+          UPTIME=$(uptime -p)
+          CURRENT_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "inconnu")
+          SITE_STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://channelmarket.net)
+
+          # --- Construction du HTML ---
+          HTML="<h2>📊 Rapport Hebdomadaire — Channel Market</h2>"
+          HTML="$HTML<p><b>Date :</b> $(date '+%d/%m/%Y à %H:%M')</p>"
+          HTML="$HTML<hr>"
+
+          HTML="$HTML<h3>🖥️ Serveur</h3>"
+          HTML="$HTML<p><b>Uptime :</b> $UPTIME</p>"
+          HTML="$HTML<p><b>Disque :</b> $DISK</p>"
+          HTML="$HTML<p><b>Mémoire :</b> $MEM</p>"
+          HTML="$HTML<p><b>Commit en prod :</b> $CURRENT_COMMIT</p>"
+
+          if [ "$SITE_STATUS" -eq 200 ] || [ "$SITE_STATUS" -eq 302 ]; then
+            HTML="$HTML<p><b>Site :</b> ✅ Opérationnel (HTTP $SITE_STATUS)</p>"
+          else
+            HTML="$HTML<p><b>Site :</b> 🚨 Problème détecté (HTTP $SITE_STATUS)</p>"
+          fi
+
+          HTML="$HTML<hr><h3>🐳 Conteneurs Docker</h3>"
+          HTML="$HTML<pre>$CONTAINERS</pre>"
+
+          HTML="$HTML<hr><h3>⚠️ Erreurs Laravel récentes</h3>"
+          HTML="$HTML<pre>$LARAVEL_ERRORS</pre>"
+
+          HTML="$HTML<hr><p><a href='https://channelmarket.net'>Accéder au site</a> | <a href='https://github.com/${{ github.repository }}/actions'>GitHub Actions</a></p>"
+
+          # --- Envoi de l'email ---
+          curl -s -X POST https://api.resend.com/emails \
+            -H "Authorization: Bearer $RESEND_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"from\": \"monitoring@channelmarket.net\",
+              \"to\": [\"elfridayemadje5@gmail.com\", \"digitaleflex@gmail.com\"],
+              \"subject\": \"📊 Rapport Hebdomadaire — Channel Market\",
+              \"html\": \"$HTML\"
+            }"
+
+          echo "Rapport envoyé avec succès."
