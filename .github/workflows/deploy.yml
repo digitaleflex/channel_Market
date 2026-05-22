@@ -4,6 +4,10 @@ on:
   push:
     branches: [ "master", "main" ]
 
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
@@ -22,6 +26,13 @@ jobs:
         extensions: mbstring, xml, ctype, iconv, mysql, bcmath, gd, intl
         coverage: none
 
+    - name: Cache Composer dependencies
+      uses: actions/cache@v4
+      with:
+        path: vendor
+        key: composer-${{ hashFiles('composer.lock') }}
+        restore-keys: composer-
+
     - name: Install Composer Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
@@ -33,6 +44,18 @@ jobs:
 
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install NPM dependencies
+      run: npm ci
+
+    - name: Build assets
+      run: npm run build
 
     - name: Execute PHPUnit Tests
       env:
@@ -50,7 +73,7 @@ jobs:
             "from": "noreply@channelmarket.net",
             "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com", "${{ github.event.head_commit.author.email }}"],
             "subject": "🚨 ÉCHEC des Tests - Déploiement Annulé",
-            "html": "<h3>Attention !</h3><p>Le déploiement de <b>Channel Market</b> a été <b>annulé</b> car les tests automatisés ou la qualité du code ont échoué.</p><p><b>Auteur :</b> ${{ github.event.head_commit.author.name }} (${{ github.event.head_commit.author.email }})</p><p><b>Message de commit :</b> ${{ github.event.head_commit.message }}</p><p><b>Branche :</b> ${{ github.ref_name }}</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions\">Voir les détails de l erreur sur GitHub Actions</a></p>"
+            "html": "<h3>Attention !</h3><p>Le déploiement de <b>Channel Market</b> a été <b>annulé</b> car les tests automatisés ont échoué.</p><p><b>Auteur :</b> ${{ github.event.head_commit.author.name }} (${{ github.event.head_commit.author.email }})</p><p><b>Commit :</b> ${{ github.event.head_commit.message }}</p><p><b>Branche :</b> ${{ github.ref_name }}</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions\">Voir les détails</a></p>"
           }'
 
   deploy:
@@ -60,14 +83,15 @@ jobs:
     steps:
     - name: Notify Webhook - Deployment Started
       run: |
-        curl -X POST "https://channelmarket.net/webhook/deploy" -H "Content-Type: application/json" -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" -d '{"commit_sha":"${{ github.sha }}", "commit_message":"${{ github.event.head_commit.message }}", "status":"deploying"}' || true # gitleaks:allow
+        curl -X POST "https://channelmarket.net/webhook/deploy" \
+          -H "Content-Type: application/json" \
+          -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" \
+          -d '{"commit_sha":"${{ github.sha }}", "commit_message":"${{ github.event.head_commit.message }}", "status":"deploying"}' || true # gitleaks:allow
 
-    - name: Diagnostic réseau (Vérification Connectivité)
+    - name: Vérification connectivité VPS
       run: |
-        echo "Tentative de ping vers l'hôte..."
-        ping -c 3 ${{ secrets.VPS_HOST }} || echo "Le serveur ne répond pas au ping (normal si ICMP est bloqué)"
-        echo "Vérification de l'ouverture du port SSH..."
-        nc -zv -w 5 ${{ secrets.VPS_HOST }} ${{ secrets.VPS_SSH_PORT || 22 }} || echo "ERREUR : Le port SSH est FERMÉ ou INACCESSIBLE"
+        echo "Vérification du port SSH..."
+        nc -zv -w 5 ${{ secrets.VPS_HOST }} ${{ secrets.VPS_SSH_PORT || 22 }} || echo "ERREUR : Port SSH inaccessible"
 
     - name: Deploy to VPS via SSH
       uses: appleboy/ssh-action@v1.0.3
@@ -76,39 +100,34 @@ jobs:
         username: ${{ secrets.VPS_USERNAME }}
         key: ${{ secrets.VPS_SSH_KEY }}
         port: ${{ secrets.VPS_SSH_PORT || 22 }}
-        timeout: 60s
-        debug: true
+        timeout: 120s
         script: |
           mkdir -p ${{ secrets.VPS_PATH }}
           cd ${{ secrets.VPS_PATH }}
-          
+
           PREVIOUS_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "")
-          echo "Dernier commit stable : $PREVIOUS_COMMIT"
+          echo "Commit stable précédent : $PREVIOUS_COMMIT"
 
           if [ ! -d ".git" ]; then
-            echo "Premier déploiement : Clonage du projet..."
+            echo "Premier déploiement : clonage..."
             git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git .
             git remote set-url origin https://github.com/${{ github.repository }}.git
           else
-            echo "Mise à jour du code existant pour la branche ${{ github.ref_name }}..."
+            echo "Mise à jour vers ${{ github.ref_name }}..."
             git fetch origin
             git reset --hard origin/${{ github.ref_name }}
           fi
-          
-          echo "Arrêt propre des conteneurs existants et nettoyage des conflits..."
-          docker compose down --remove-orphans || true
-          docker container prune -f
- 
-          echo "Lancement de Docker Compose avec construction..."
-          if ! docker compose up -d --build; then
+
+          echo "Build et redémarrage sans interruption de service..."
+          if ! docker compose up -d --build --remove-orphans; then
             echo "ERREUR : Échec du build Docker. Rollback vers $PREVIOUS_COMMIT..."
             if [ -n "$PREVIOUS_COMMIT" ]; then
               git reset --hard $PREVIOUS_COMMIT
-              docker compose up -d --build
+              docker compose up -d --build --remove-orphans
             fi
             exit 1
           fi
-          
+
           echo "Extraction des assets compilés (CSS/JS)..."
           APP_CONTAINER=$(docker compose ps -q app)
           if [ -z "$APP_CONTAINER" ]; then
@@ -116,53 +135,58 @@ jobs:
             exit 1
           fi
           if ! docker exec "$APP_CONTAINER" test -f /var/build/manifest.json; then
-            echo "ERREUR : /var/build/manifest.json absent du conteneur. Le build Vite a échoué."
+            echo "ERREUR : /var/build/manifest.json absent. Le build Vite a échoué."
             exit 1
           fi
           rm -rf ./public/build
           docker cp "$APP_CONTAINER":/var/build ./public/
           chmod -R 755 public/build
           if [ ! -f ./public/build/manifest.json ]; then
-            echo "ERREUR : Copie des assets échouée, manifest.json manquant."
+            echo "ERREUR : Copie des assets échouée."
             exit 1
           fi
           echo "Assets copiés avec succès."
- 
+
           docker compose exec -T --user root app mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions bootstrap/cache
           docker compose exec -T --user root app chmod -R 777 storage bootstrap/cache
           docker compose exec -T --user root app chown -R www-data:www-data storage bootstrap/cache
-          
+
           docker compose exec -T app php artisan storage:link --force
           docker compose exec -T app php artisan migrate --force
           docker compose exec -T app php artisan config:cache
           docker compose exec -T app php artisan route:cache
           docker compose exec -T app php artisan view:cache
-          
+
           docker image prune -f
-          
-          echo "Attente de la stabilisation des conteneurs (20s)..."
-          sleep 20
-          
-          echo "Vérification de l'URL : https://channelmarket.net"
-          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://channelmarket.net)
-          
-          if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 302 ]; then
-            echo "✅ Succès ! Le site répond avec le code $HTTP_STATUS."
-          else
-            echo "🚨 ERREUR CRITIQUE : Le site répond $HTTP_STATUS (404/500). Lancement du Rollback..."
-            if [ -n "$PREVIOUS_COMMIT" ]; then
-              git reset --hard $PREVIOUS_COMMIT
-              docker compose up -d --build
-              echo "Rollback effectué vers le commit $PREVIOUS_COMMIT."
+
+          echo "Vérification de santé du site (max 60s)..."
+          for i in $(seq 1 12); do
+            HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" https://channelmarket.net)
+            if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 302 ]; then
+              echo "✅ Site opérationnel (HTTP $HTTP_STATUS) après $((i * 5))s."
+              break
             fi
-            exit 1
-          fi
- 
+            echo "Tentative $i/12 — HTTP $HTTP_STATUS, nouvel essai dans 5s..."
+            sleep 5
+            if [ "$i" -eq 12 ]; then
+              echo "🚨 ERREUR CRITIQUE : Site répond $HTTP_STATUS après 60s. Rollback..."
+              if [ -n "$PREVIOUS_COMMIT" ]; then
+                git reset --hard $PREVIOUS_COMMIT
+                docker compose up -d --build --remove-orphans
+                echo "Rollback effectué vers $PREVIOUS_COMMIT."
+              fi
+              exit 1
+            fi
+          done
+
     - name: Notification Succès (Email & Webhook)
       if: success()
       run: |
-        curl -X POST "https://channelmarket.net/webhook/deploy" -H "Content-Type: application/json" -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" -d '{"commit_sha":"${{ github.sha }}", "status":"success"}' || true # gitleaks:allow
- 
+        curl -X POST "https://channelmarket.net/webhook/deploy" \
+          -H "Content-Type: application/json" \
+          -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" \
+          -d '{"commit_sha":"${{ github.sha }}", "status":"success"}' || true # gitleaks:allow
+
         curl -X POST https://api.resend.com/emails \
           -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
           -H "Content-Type: application/json" \
@@ -170,20 +194,23 @@ jobs:
             "from": "noreply@channelmarket.net",
             "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com", "${{ github.event.head_commit.author.email }}"],
             "subject": "✅ Déploiement RÉUSSI - Channel Market",
-            "html": "<h3>Félicitations !</h3><p>Le déploiement de <b>Channel Market</b> sur ton VPS s est déroulé avec succès.</p><p>Version : ${{ github.sha }}</p><p><b>Auteur :</b> ${{ github.event.head_commit.author.name }}</p><p><b>Branche :</b> ${{ github.ref_name }}</p><p><a href=\"https://channelmarket.net\">Accéder au site</a></p>"
+            "html": "<h3>Félicitations !</h3><p>Le déploiement de <b>Channel Market</b> sur le VPS s est déroulé avec succès.</p><p><b>Version :</b> ${{ github.sha }}</p><p><b>Auteur :</b> ${{ github.event.head_commit.author.name }}</p><p><b>Branche :</b> ${{ github.ref_name }}</p><p><a href=\"https://channelmarket.net\">Accéder au site</a></p>"
           }'
- 
+
     - name: Notification Échec du Déploiement (Email & Webhook)
       if: failure()
       run: |
-        curl -X POST "https://channelmarket.net/webhook/deploy" -H "Content-Type: application/json" -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" -d '{"commit_sha":"${{ github.sha }}", "status":"failed"}' || true # gitleaks:allow
- 
+        curl -X POST "https://channelmarket.net/webhook/deploy" \
+          -H "Content-Type: application/json" \
+          -H "X-Deploy-Token: faa82cf54d512bf07b72e29d3501ff24" \
+          -d '{"commit_sha":"${{ github.sha }}", "status":"failed"}' || true # gitleaks:allow
+
         curl -X POST https://api.resend.com/emails \
           -H "Authorization: Bearer ${{ secrets.RESEND_API_KEY }}" \
           -H "Content-Type: application/json" \
           -d '{
             "from": "noreply@channelmarket.net",
             "to": ["elfridayemadje5@gmail.com", "digitaleflex@gmail.com", "${{ github.event.head_commit.author.email }}"],
-            "subject": "🚨 ERREUR de Déploiement (SSH/Serveur) - Channel Market",
-            "html": "<h3>Attention !</h3><p>Le déploiement de <b>Channel Market</b> sur le serveur a échoué (erreur d installation ou d exécution Docker).</p><p>Le serveur a automatiquement exécuté un rollback vers la version stable précédente.</p><p><b>Auteur :</b> ${{ github.event.head_commit.author.name }}</p><p><b>Branche :</b> ${{ github.ref_name }}</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions\">Voir les logs d erreur sur GitHub</a></p>"
+            "subject": "🚨 ERREUR de Déploiement - Channel Market",
+            "html": "<h3>Attention !</h3><p>Le déploiement de <b>Channel Market</b> a échoué. Le rollback automatique a été exécuté.</p><p><b>Auteur :</b> ${{ github.event.head_commit.author.name }}</p><p><b>Branche :</b> ${{ github.ref_name }}</p><p><a href=\"${{ github.server_url }}/${{ github.repository }}/actions\">Voir les logs</a></p>"
           }'
