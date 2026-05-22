@@ -12,7 +12,7 @@
             <h1 class="text-5xl md:text-8xl font-black tracking-tighter text-slate-900 mb-8 leading-[0.9] lg:-ml-1">
                 L'Excellence <br> <span class="gradient-text italic">Digitale</span> <br> à portée de main.
             </h1>
-            <p class="text-lg md:text-xl text-slate-500 max-w-xl mb-12 leading-relaxed font-medium">
+            <p class="text-lg md:text-xl text-slate-600 max-w-xl mb-12 leading-relaxed font-medium">
                 Chanel Market est la place de marché de référence pour les créateurs exigeants. Découvrez des ressources premium conçues pour propulser votre succès.
             </p>
             <div class="flex flex-wrap justify-center lg:justify-start gap-4">
@@ -26,12 +26,12 @@
             <div class="mt-16 flex items-center justify-center lg:justify-start gap-8 opacity-50">
                 <div class="flex flex-col">
                     <span class="text-2xl font-black text-slate-900">5k+</span>
-                    <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Ventes</span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Ventes</span>
                 </div>
                 <div class="w-px h-10 bg-slate-200"></div>
                 <div class="flex flex-col">
                     <span class="text-2xl font-black text-slate-900">99%</span>
-                    <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Satisfaction</span>
+                    <span class="text-xs font-bold uppercase tracking-widest text-slate-500">Satisfaction</span>
                 </div>
             </div>
         </div>
@@ -58,7 +58,7 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <div>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Paiement</p>
+                            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Paiement</p>
                             <p class="text-sm font-black text-slate-900">100% Sécurisé</p>
                         </div>
                     </div>
@@ -71,7 +71,7 @@
     <div id="features" class="py-24 border-t border-slate-100">
         <div class="text-center mb-20">
             <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-slate-900 mb-4">Une expérience d'achat <br> <span class="text-amber-600">réinventée</span>.</h2>
-            <p class="text-slate-500 font-medium">Pourquoi choisir Chanel Market pour vos ressources numériques ?</p>
+            <p class="text-slate-600 font-medium">Pourquoi choisir Chanel Market pour vos ressources numériques ?</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -80,7 +80,7 @@
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 </div>
                 <h3 class="text-xl font-bold text-slate-900 mb-4 tracking-tight">Vitesse Instantanée</h3>
-                <p class="text-slate-500 text-sm leading-relaxed font-medium">
+                <p class="text-slate-600 text-sm leading-relaxed font-medium">
                     Pas d'attente. Vos produits sont disponibles en téléchargement immédiatement après la validation de votre paiement.
                 </p>
             </div>
@@ -90,7 +90,7 @@
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                 </div>
                 <h3 class="text-xl font-bold text-slate-900 mb-4 tracking-tight">Qualité Certifiée</h3>
-                <p class="text-slate-500 text-sm leading-relaxed font-medium">
+                <p class="text-slate-600 text-sm leading-relaxed font-medium">
                     Chaque ressource est rigoureusement testée par notre équipe pour garantir une performance optimale et sans bug.
                 </p>
             </div>
@@ -100,7 +100,7 @@
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
                 <h3 class="text-xl font-bold text-slate-900 mb-4 tracking-tight">Prix Juste</h3>
-                <p class="text-slate-500 text-sm leading-relaxed font-medium">
+                <p class="text-slate-600 text-sm leading-relaxed font-medium">
                     Nous croyons en la démocratisation de la technologie. Des outils professionnels à des tarifs accessibles à tous.
                 </p>
             </div>
@@ -115,7 +115,7 @@
                 <h2 class="text-4xl md:text-6xl font-black text-white tracking-tighter mb-8 leading-tight">
                     Prêt à transformer <br> vos <span class="text-amber-400 italic">projets</span> ?
                 </h2>
-                <p class="text-slate-400 text-lg md:text-xl max-w-xl mx-auto mb-12 font-medium">
+                <p class="text-slate-500 text-lg md:text-xl max-w-xl mx-auto mb-12 font-medium">
                     Rejoignez des milliers de créateurs et développeurs qui font confiance à Chanel Market pour leurs besoins digitaux.
                 </p>
                 <div class="flex flex-wrap justify-center gap-6">

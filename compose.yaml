@@ -1,3 +1,5 @@
+name: channel-market
+
 services:
   # PHP Application
   app:

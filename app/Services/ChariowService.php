@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Http;
 class ChariowService
 {
     protected string $apiKey = '';
+
     protected string $apiUrl = '';
+
     protected string $webhookSecret = '';
 
     public function __construct()

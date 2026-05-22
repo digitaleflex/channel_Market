@@ -1,0 +1,22 @@
+--- RAPPORT D'ACTIVITÉ ---
+Date : Sun May 17 19:04:11 UTC 2026
+
+--- ÉTAT DU DISQUE ---
+/dev/sda1        96G   70G   27G  73% /
+
+--- UTILISATION MÉMOIRE ---
+               total        used        free      shared  buff/cache   available
+Mem:            7940        3756         980         136        3711        4184
+Swap:              0           0           0
+
+--- CONTENEURS DOCKER ---
+NAME                          IMAGE                      COMMAND                  SERVICE      CREATED        STATUS                  PORTS
+channel-market-app-1          channel-market-app         "entrypoint php-fpm"     app          42 hours ago   Up 42 hours (healthy)   9000/tcp
+channel-market-db-1           mysql:8.0                  "docker-entrypoint.s…"   db           42 hours ago   Up 42 hours (healthy)   3306/tcp, 33060/tcp
+channel-market-mailpit-1      axllent/mailpit:latest     "/mailpit"               mailpit      42 hours ago   Up 42 hours (healthy)   1025/tcp, 1110/tcp, 8025/tcp
+channel-market-phpmyadmin-1   phpmyadmin:latest          "/docker-entrypoint.…"   phpmyadmin   42 hours ago   Up 42 hours (healthy)   80/tcp
+channel-market-scheduler-1    channel-market-scheduler   "entrypoint php arti…"   scheduler    42 hours ago   Up 42 hours (healthy)   9000/tcp
+channel-market-webserver-1    nginx:alpine               "/docker-entrypoint.…"   webserver    42 hours ago   Up 42 hours (healthy)   80/tcp
+channel-market-worker-1       channel-market-worker      "entrypoint php arti…"   worker       42 hours ago   Up 42 hours (healthy)   9000/tcp
+
+--- DERNIERS LOGS ERREURS (Laravel) ---

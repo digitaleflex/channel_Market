@@ -28,7 +28,7 @@ class PaymentController extends Controller
             'email' => ['required', 'email'],
             'first_name' => ['required', 'string', 'max:100'],
             'last_name' => ['required', 'string', 'max:100'],
-            'phone' => ['required', 'string', 'max:30'],
+            'phone' => ['required', 'string', 'max:30', 'regex:/^\+[0-9 ]{6,25}$/'],
         ]);
 
         $amount = (int) round((float) $product->price);
@@ -48,7 +48,7 @@ class PaymentController extends Controller
 
         try {
             $productId = $this->resolveChariowProductId($product);
-            $redirectUrl = rtrim(config('app.url'), '/') . route('payment.chariow.return', ['order' => $order->id], false);
+            $redirectUrl = rtrim(config('app.url'), '/').route('payment.chariow.return', ['order' => $order->id], false);
 
             $paymentData = [
                 'product_id' => $productId,
@@ -75,6 +75,7 @@ class PaymentController extends Controller
 
             if ($step === 'payment' && $paymentUrl) {
                 $order->update(['transaction_id' => $transactionId]);
+
                 return redirect()->away($paymentUrl);
             }
 
@@ -112,7 +113,7 @@ class PaymentController extends Controller
 
             return redirect()
                 ->route('checkout', $product)
-                ->with('error', "Erreur lors de l'initialisation du paiement : ".$e->getMessage());
+                ->with('error', "Erreur lors de l'initialisation du paiement : " . $e->getMessage());
         }
     }
 
@@ -159,6 +160,7 @@ class PaymentController extends Controller
 
             if (! $order) {
                 Log::warning('chariow webhook: order not found', ['paymentId' => $paymentId]);
+
                 return response()->json(['ok' => true], 200);
             }
 
@@ -182,17 +184,21 @@ class PaymentController extends Controller
 
     private function normalizePhone(string $phone): array
     {
-        $digits = preg_replace('/[^0-9]+/', '', $phone);
+        $trimmed = trim($phone);
+        $digits = preg_replace('/[^0-9]+/', '', $trimmed);
         $countryCode = config('services.chariow.default_country_code', 'FR');
+        $nationalNumber = $digits;
 
-        if (str_starts_with(trim($phone), '+')) {
-            if (preg_match('/^\+([0-9]{1,3})/', trim($phone), $matches)) {
-                $countryCode = $this->countryCodeFromDialCode($matches[1]) ?? $countryCode;
+        if (str_starts_with($trimmed, '+')) {
+            if (preg_match('/^\+([0-9]{1,3})/', $trimmed, $matches)) {
+                $dialCode = $matches[1];
+                $countryCode = $this->countryCodeFromDialCode($dialCode) ?? $countryCode;
+                $nationalNumber = preg_replace('/^' . preg_quote($dialCode, '/') . '/', '', $digits);
             }
         }
 
         return [
-            'number' => $digits,
+            'number' => $nationalNumber,
             'country_code' => $countryCode,
         ];
     }
@@ -200,15 +206,201 @@ class PaymentController extends Controller
     private function countryCodeFromDialCode(string $dialCode): ?string
     {
         $map = [
+            '1' => 'US',
+            '7' => 'RU',
+            '20' => 'EG',
+            '27' => 'ZA',
+            '30' => 'GR',
+            '31' => 'NL',
+            '32' => 'BE',
             '33' => 'FR',
-            '229' => 'BJ',
+            '34' => 'ES',
+            '36' => 'HU',
+            '39' => 'IT',
+            '40' => 'RO',
+            '41' => 'CH',
+            '43' => 'AT',
+            '44' => 'GB',
+            '45' => 'DK',
+            '46' => 'SE',
+            '47' => 'NO',
+            '48' => 'PL',
+            '49' => 'DE',
+            '51' => 'PE',
+            '52' => 'MX',
+            '53' => 'CU',
+            '54' => 'AR',
+            '55' => 'BR',
+            '56' => 'CL',
+            '57' => 'CO',
+            '58' => 'VE',
+            '60' => 'MY',
+            '61' => 'AU',
+            '62' => 'ID',
+            '63' => 'PH',
+            '64' => 'NZ',
+            '65' => 'SG',
+            '66' => 'TH',
+            '81' => 'JP',
+            '82' => 'KR',
+            '84' => 'VN',
+            '86' => 'CN',
+            '90' => 'TR',
+            '91' => 'IN',
+            '92' => 'PK',
+            '93' => 'AF',
+            '94' => 'LK',
+            '95' => 'MM',
+            '98' => 'IR',
+            '211' => 'SS',
+            '212' => 'MA',
+            '213' => 'DZ',
+            '216' => 'TN',
+            '218' => 'LY',
+            '220' => 'GM',
+            '221' => 'SN',
+            '222' => 'MR',
+            '223' => 'ML',
+            '224' => 'GN',
             '225' => 'CI',
-            '237' => 'CM',
-            '243' => 'CD',
             '226' => 'BF',
+            '227' => 'NE',
             '228' => 'TG',
+            '229' => 'BJ',
+            '230' => 'MU',
+            '231' => 'LR',
+            '232' => 'SL',
+            '233' => 'GH',
+            '234' => 'NG',
+            '235' => 'TD',
             '236' => 'CF',
+            '237' => 'CM',
+            '238' => 'CV',
+            '239' => 'ST',
+            '240' => 'GQ',
             '241' => 'GA',
+            '242' => 'CG',
+            '243' => 'CD',
+            '244' => 'AO',
+            '245' => 'GW',
+            '246' => 'IO',
+            '248' => 'SC',
+            '249' => 'SD',
+            '250' => 'RW',
+            '251' => 'ET',
+            '252' => 'SO',
+            '253' => 'DJ',
+            '254' => 'KE',
+            '255' => 'TZ',
+            '256' => 'UG',
+            '257' => 'BI',
+            '258' => 'MZ',
+            '260' => 'ZM',
+            '261' => 'MG',
+            '262' => 'RE',
+            '263' => 'ZW',
+            '264' => 'NA',
+            '265' => 'MW',
+            '266' => 'LS',
+            '267' => 'BW',
+            '268' => 'SZ',
+            '269' => 'KM',
+            '290' => 'SH',
+            '291' => 'ER',
+            '297' => 'AW',
+            '298' => 'FO',
+            '299' => 'GL',
+            '350' => 'GI',
+            '351' => 'PT',
+            '352' => 'LU',
+            '353' => 'IE',
+            '354' => 'IS',
+            '355' => 'AL',
+            '356' => 'MT',
+            '357' => 'CY',
+            '358' => 'FI',
+            '359' => 'BG',
+            '370' => 'LT',
+            '371' => 'LV',
+            '372' => 'EE',
+            '373' => 'MD',
+            '374' => 'AM',
+            '375' => 'BY',
+            '376' => 'AD',
+            '377' => 'MC',
+            '378' => 'SM',
+            '379' => 'VA',
+            '380' => 'UA',
+            '381' => 'RS',
+            '382' => 'ME',
+            '383' => 'XK',
+            '385' => 'HR',
+            '386' => 'SI',
+            '387' => 'BA',
+            '389' => 'MK',
+            '420' => 'CZ',
+            '421' => 'SK',
+            '423' => 'LI',
+            '500' => 'FK',
+            '501' => 'BZ',
+            '502' => 'GT',
+            '503' => 'SV',
+            '504' => 'HN',
+            '505' => 'NI',
+            '506' => 'CR',
+            '507' => 'PA',
+            '508' => 'PM',
+            '509' => 'HT',
+            '590' => 'GP',
+            '591' => 'BO',
+            '592' => 'GY',
+            '593' => 'EC',
+            '594' => 'GF',
+            '595' => 'PY',
+            '596' => 'MQ',
+            '597' => 'SR',
+            '598' => 'UY',
+            '670' => 'TL',
+            '672' => 'AQ',
+            '673' => 'BN',
+            '674' => 'NR',
+            '675' => 'PG',
+            '676' => 'TO',
+            '677' => 'SB',
+            '678' => 'VU',
+            '679' => 'FJ',
+            '680' => 'PW',
+            '681' => 'WF',
+            '682' => 'CK',
+            '683' => 'NU',
+            '685' => 'WS',
+            '686' => 'KI',
+            '687' => 'NC',
+            '688' => 'TV',
+            '689' => 'PF',
+            '690' => 'TK',
+            '691' => 'FM',
+            '692' => 'MH',
+            '850' => 'KP',
+            '852' => 'HK',
+            '853' => 'MO',
+            '855' => 'KH',
+            '856' => 'LA',
+            '880' => 'BD',
+            '886' => 'TW',
+            '971' => 'AE',
+            '972' => 'IL',
+            '973' => 'BH',
+            '974' => 'QA',
+            '975' => 'BT',
+            '976' => 'MN',
+            '977' => 'NP',
+            '992' => 'TJ',
+            '993' => 'TM',
+            '994' => 'AZ',
+            '995' => 'GE',
+            '996' => 'KG',
+            '998' => 'UZ',
         ];
 
         return $map[$dialCode] ?? null;

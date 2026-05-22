@@ -16,7 +16,7 @@
 
     @include('components.tracking')
 </head>
-<body class="flex flex-col min-h-screen selection:bg-indigo-500 selection:text-white bg-slate-50 overflow-x-hidden" x-data="{ mobileMenuOpen: false }">
+<body class="flex flex-col min-h-screen selection:bg-amber-500 selection:text-white bg-slate-50 overflow-x-hidden" x-data="{ mobileMenuOpen: false }">
     <!-- Decorative Blobs -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div class="blur-blob w-[600px] h-[600px] bg-amber-200/40 top-[-300px] left-[-150px]"></div>
@@ -46,13 +46,13 @@
                     <div class="h-6 w-px bg-slate-200"></div>
 
                     @guest
-                        <a href="{{ route('login') }}" class="text-sm font-bold text-slate-600 hover:text-indigo-600 transition-colors">Connexion</a>
+                        <a href="{{ route('login') }}" class="text-sm font-bold text-slate-600 hover:text-amber-600 transition-colors">Connexion</a>
                         <a href="{{ route('register') }}" class="btn-premium-primary !py-2.5 !px-6">Rejoindre</a>
                     @else
                         <div class="flex items-center gap-6">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="text-sm font-bold text-slate-400 hover:text-rose-500 transition-colors flex items-center gap-2 group">
+                                <button type="submit" class="text-sm font-bold text-slate-500 hover:text-rose-500 transition-colors flex items-center gap-2 group">
                                     <span>Déconnexion</span>
                                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                                 </button>
@@ -96,8 +96,8 @@
             </div>
 
             <div class="flex flex-col gap-6 flex-grow">
-                <a href="{{ route('products.index') }}" class="text-3xl font-black text-slate-900 hover:text-indigo-600 transition-colors">Boutique</a>
-                <a href="{{ url('/dashboard') }}" class="text-3xl font-black text-slate-900 hover:text-indigo-600 transition-colors">Mes achats</a>
+                <a href="{{ route('products.index') }}" class="text-3xl font-black text-slate-900 hover:text-amber-600 transition-colors">Boutique</a>
+                <a href="{{ url('/dashboard') }}" class="text-3xl font-black text-slate-900 hover:text-amber-600 transition-colors">Mes achats</a>
                 
                 <div class="h-px bg-slate-100 my-4"></div>
                 
@@ -113,7 +113,7 @@
             </div>
 
             <div class="pt-8 border-t border-slate-100">
-                <p class="text-slate-400 text-sm font-medium">&copy; {{ date('Y') }} Channel Market. Tous droits réservés.</p>
+                <p class="text-slate-500 text-sm font-medium">&copy; {{ date('Y') }} Channel Market. Tous droits réservés.</p>
             </div>
         </div>
     </div>
@@ -134,7 +134,7 @@
     </main>
 
     <footer class="bg-white border-t border-slate-100 py-20 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-1/3 h-full bg-indigo-50/30 -skew-x-12 translate-x-1/2"></div>
+        <div class="absolute top-0 right-0 w-1/3 h-full bg-amber-50/30 -skew-x-12 translate-x-1/2"></div>
         <div class="container-app relative">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
                 <div class="md:col-span-5">
@@ -144,12 +144,12 @@
                         </div>
                         <span class="text-2xl font-black tracking-tighter text-slate-900">Channel Market</span>
                     </a>
-                    <p class="text-slate-500 max-w-sm leading-relaxed mb-10 text-lg font-medium">
+                    <p class="text-slate-600 max-w-sm leading-relaxed mb-8 text-lg font-medium">
                         La plateforme numéro un pour vos produits digitaux premium. Accédez à des ressources exclusives instantanément.
                     </p>
                     <div class="flex gap-4">
-                        <a href="https://www.facebook.com/profile.php?id=61588294455790" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-indigo-600 hover:text-white transition-all duration-300" title="Facebook">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0H1.325C.593 0 0 .593 0 1.325v21.351C0 23.407.593 24 1.325 24H12.82V14.706H9.692V11.13h3.128V8.414c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.464.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.312h3.587l-.467 3.576h-3.12V24h6.116C23.407 24 24 23.407 24 22.676V1.325C24 .593 23.407 0 22.675 0z"/></svg>
+                        <a href="https://www.facebook.com/profile.php?id=61588294455790" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-500 hover:bg-amber-600 hover:text-white transition-all duration-300" title="Facebook">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                         </a>
                     </div>
                 </div>
@@ -157,28 +157,28 @@
                 <div class="md:col-span-2 md:col-start-8">
                     <h4 class="font-black text-slate-900 mb-8 uppercase text-xs tracking-[0.2em]">Navigation</h4>
                     <ul class="space-y-4">
-                        <li><a href="{{ route('products.index') }}" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Boutique</a></li>
-                        <li><a href="{{ url('/dashboard') }}" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Mes achats</a></li>
-                        <li><a href="{{ route('login') }}" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Connexion</a></li>
+                        <li><a href="{{ route('products.index') }}" class="text-slate-600 hover:text-amber-600 transition-colors text-sm font-bold">Boutique</a></li>
+                        <li><a href="{{ url('/dashboard') }}" class="text-slate-600 hover:text-amber-600 transition-colors text-sm font-bold">Mes achats</a></li>
+                        <li><a href="{{ route('login') }}" class="text-slate-600 hover:text-amber-600 transition-colors text-sm font-bold">Connexion</a></li>
                     </ul>
                 </div>
 
                 <div class="md:col-span-3">
                     <h4 class="font-black text-slate-900 mb-8 uppercase text-xs tracking-[0.2em]">Support</h4>
                     <ul class="space-y-4">
-                        <li><a href="mailto:mahougnonbalaam@gmail.com" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Centre d'aide</a></li>
-                        <li><a href="mailto:mahougnonbalaam@gmail.com" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">mahougnonbalaam@gmail.com</a></li>
-                        <li><a href="#" class="text-slate-500 hover:text-amber-600 transition-colors text-sm font-bold">Politique de remboursement</a></li>
+                        <li><a href="#" class="text-slate-600 hover:text-amber-600 transition-colors text-sm font-bold">Centre d'aide</a></li>
+                        <li><a href="" class="text-slate-600 hover:text-amber-600 transition-colors text-sm font-bold">+22969573488</a></li>
+                        <div class="mb-8 space-y-3 text-slate-600 text-sm font-medium">
+                        <li><a href="mailto:mahougnonbalaam@gmail.com" class="text-slate-600 hover:text-amber-600 transition-colors text-sm font-bold">mahougnonbalaam@gmail.com</a></li>
+                        </div>
                     </ul>
                 </div>
             </div>
             
             <div class="mt-20 pt-10 border-t border-slate-100 flex flex-col md:flex-row justify-between items-center gap-6">
-                <p class="text-slate-400 text-sm font-bold tracking-tight">&copy; {{ date('Y') }} Channel Market. Built with Excellence.</p>
+                <p class="text-slate-500 text-sm font-bold tracking-tight">&copy; {{ date('Y') }} Channel Market. Built with Excellence.</p>
                 <div class="flex items-center gap-8">
-                    <ul>
-                    <li><a href="https://www.linkedin.com/in/elfridamelvinefleurs%C3%A8djro-yemadje/"><span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Developp by Elfrida YEMADJE
-                    </span></a></li> </ul>
+                    <span> <a href="https://www.linkedin.com/in/elfridamelvinefleurs%C3%A8djro-yemadje/"  class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic" >Developped by Elfrida YEMADJE </a> </span>
                     <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest italic">Premium Marketplace</span>
                 </div>
             </div>

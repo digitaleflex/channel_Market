@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Setting;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 
 class SettingController extends Controller
@@ -37,10 +38,18 @@ class SettingController extends Controller
         ]);
 
         foreach ($validated as $key => $value) {
+            $settingKey = strtoupper($key);
+            $setting = Setting::where('key', $settingKey)->first();
+            $oldValue = $setting ? $setting->value : null;
+
             Setting::updateOrCreate(
-                ['key' => strtoupper($key)],
+                ['key' => $settingKey],
                 ['value' => $value]
             );
+
+            if ($oldValue !== $value) {
+                ActivityLogger::log('setting_updated', "Modification du paramètre {$settingKey} : ".($oldValue ?? 'Non défini').' -> '.($value ?? 'Non défini'));
+            }
         }
 
         return redirect()->back()->with('success', 'Paramètres de tracking mis à jour avec succès !');
