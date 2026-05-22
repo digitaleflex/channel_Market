@@ -110,9 +110,23 @@ jobs:
           fi
           
           echo "Extraction des assets compilés (CSS/JS)..."
+          APP_CONTAINER=$(docker compose ps -q app)
+          if [ -z "$APP_CONTAINER" ]; then
+            echo "ERREUR : Conteneur app introuvable."
+            exit 1
+          fi
+          if ! docker exec "$APP_CONTAINER" test -f /var/build/manifest.json; then
+            echo "ERREUR : /var/build/manifest.json absent du conteneur. Le build Vite a échoué."
+            exit 1
+          fi
           rm -rf ./public/build
-          docker cp channel-market-app-1:/var/build ./public/
+          docker cp "$APP_CONTAINER":/var/build ./public/
           chmod -R 755 public/build
+          if [ ! -f ./public/build/manifest.json ]; then
+            echo "ERREUR : Copie des assets échouée, manifest.json manquant."
+            exit 1
+          fi
+          echo "Assets copiés avec succès."
  
           docker compose exec -T --user root app mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions bootstrap/cache
           docker compose exec -T --user root app chmod -R 777 storage bootstrap/cache
