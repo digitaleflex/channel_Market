@@ -88,9 +88,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 
     Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
-    Route::get('/activity/workflows', [ActivityController::class, 'workflows'])->name('activity.workflows');
-    Route::post('/activity/backup', [ActivityController::class, 'runBackup'])->name('activity.backup');
-    Route::post('/activity/monitor', [ActivityController::class, 'runMonitor'])->name('activity.monitor');
+    Route::get('/workflows', [ActivityController::class, 'workflows'])->name('workflows.index');
+    Route::post('/workflows/run-backup', [ActivityController::class, 'runBackup'])->name('workflows.run-backup');
+    Route::post('/workflows/run-monitor', [ActivityController::class, 'runMonitor'])->name('workflows.run-monitor');
 });
 
 // Health check endpoint (used by CI/CD smoke tests)
