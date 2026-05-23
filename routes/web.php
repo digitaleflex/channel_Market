@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
@@ -85,6 +86,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
+    Route::get('/activity/workflows', [ActivityController::class, 'workflows'])->name('activity.workflows');
+    Route::post('/activity/backup', [ActivityController::class, 'runBackup'])->name('activity.backup');
+    Route::post('/activity/monitor', [ActivityController::class, 'runMonitor'])->name('activity.monitor');
 });
 
 // Health check endpoint (used by CI/CD smoke tests)
