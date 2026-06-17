@@ -18,7 +18,7 @@ return [
          * The name of this application. You can use this name to monitor
          * the backups.
          */
-        'name' => env('APP_NAME', 'laravel-backup'),
+        'name' => 'channel-market-backup',
 
         'source' => [
             'files' => [
@@ -165,13 +165,13 @@ return [
              */
             'disks' => [
                 'local',
-                'google',
+                's3', // Backblaze B2 (S3-compatible)
             ],
 
             /*
              * Determines whether to allow backups to continue when some targets fail instead of failing completely.
              */
-            'continue_on_failure' => false,
+            'continue_on_failure' => true,
         ],
 
         /*
@@ -297,8 +297,8 @@ return [
      */
     'monitor_backups' => [
         [
-            'name' => env('APP_NAME', 'laravel-backup'),
-            'disks' => ['local', 'google'],
+        'name' => 'channel-market-backup',
+            'disks' => ['local', 's3'],
             'health_checks' => [
                 MaximumAgeInDays::class => 1,
                 MaximumStorageInMegabytes::class => 5000,

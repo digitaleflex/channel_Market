@@ -63,7 +63,7 @@ return [
                 (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
             'dump' => [
-                'add_extra_option' => '--ssl-mode=DISABLED',
+                'add_extra_option' => '--ssl=0',
             ],
         ],
 

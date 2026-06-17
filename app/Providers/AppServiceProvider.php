@@ -2,13 +2,8 @@
 
 namespace App\Providers;
 
-use Google\Client;
-use Google\Service\Drive;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
-use League\Flysystem\Filesystem;
-use Masbug\Flysystem\GoogleDriveAdapter;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,21 +23,5 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.env') === 'production') {
             URL::forceScheme('https');
         }
-
-        Storage::extend('google', function ($app, $config) {
-            $client = new Client;
-            $credentials = $config['serviceAccountCredentials'] ?? '';
-
-            if (! empty($credentials) && file_exists($credentials)) {
-                $client->setAuthConfig($credentials);
-            }
-
-            $client->addScope(Drive::DRIVE);
-
-            $service = new Drive($client);
-            $adapter = new GoogleDriveAdapter($service, $config['folderId'] ?? '/');
-
-            return new Filesystem($adapter);
-        });
     }
 }
