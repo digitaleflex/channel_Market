@@ -33,6 +33,7 @@ services:
     deploy:
       resources:
         limits:
+          cpus: "0.5"
           memory: 512M
     logging:
       driver: "json-file"
@@ -78,6 +79,11 @@ services:
       start_period: 10s
     depends_on:
       - app
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: 256M
 
   # Scheduler
   scheduler:
@@ -111,6 +117,11 @@ services:
       start_period: 10s
     depends_on:
       - app
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: 128M
 
   # Nginx Web Server
   webserver:
@@ -128,12 +139,16 @@ services:
       - "traefik.http.routers.channelmarket-web.rule=Host(`${APP_DOMAIN:-channelmarket.net}`)"
       - "traefik.http.routers.channelmarket-web.entrypoints=websecure"
       - "traefik.http.routers.channelmarket-web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.channelmarket-web.loadbalancer.healthcheck.path=/"
+      - "traefik.http.services.channelmarket-web.loadbalancer.healthcheck.interval=30s"
+      - "traefik.http.services.channelmarket-web.loadbalancer.healthcheck.timeout=3s"
       - "traefik.docker.network=proxy"
     depends_on:
       - app
     deploy:
       resources:
         limits:
+          cpus: "0.2"
           memory: 128M
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1 || exit 1"]
@@ -165,7 +180,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          cpus: "0.5"
+          memory: 768M
     logging:
       driver: "json-file"
       options:
@@ -180,7 +196,7 @@ services:
   # Email Testing (Mailpit)
   mailpit:
     image: axllent/mailpit:latest
-    restart: unless-stopped
+    restart: no
     volumes:
       - mailpit-data:/data
     networks:
@@ -192,6 +208,10 @@ services:
       - "traefik.http.routers.channelmarket-mail.entrypoints=websecure"
       - "traefik.http.routers.channelmarket-mail.tls.certresolver=letsencrypt"
       - "traefik.http.services.channelmarket-mail.loadbalancer.server.port=8025"
+      - "traefik.http.routers.channelmarket-mail.middlewares=rate-limit-admin@file,circuit-breaker-api@file"
+      - "traefik.http.services.channelmarket-mail.loadbalancer.healthcheck.path=/"
+      - "traefik.http.services.channelmarket-mail.loadbalancer.healthcheck.interval=30s"
+      - "traefik.http.services.channelmarket-mail.loadbalancer.healthcheck.timeout=3s"
       - "traefik.docker.network=proxy"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8025 || exit 1"]
@@ -202,12 +222,26 @@ services:
     deploy:
       resources:
         limits:
+          cpus: "0.1"
           memory: 128M
 
   # Database Management
   phpmyadmin:
     image: phpmyadmin:latest
-    restart: unless-stopped
+    restart: no
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_NET_BIND_SERVICE
+      - CAP_SETUID
+      - CAP_SETGID
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/lib/php/sessions
+      - /run/apache2
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306
@@ -220,6 +254,10 @@ services:
       - "traefik.http.routers.channelmarket-pma.rule=Host(`db.${APP_DOMAIN:-channelmarket.net}`)"
       - "traefik.http.routers.channelmarket-pma.entrypoints=websecure"
       - "traefik.http.routers.channelmarket-pma.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.channelmarket-pma.middlewares=rate-limit-admin@file,circuit-breaker-api@file"
+      - "traefik.http.services.channelmarket-pma.loadbalancer.healthcheck.path=/"
+      - "traefik.http.services.channelmarket-pma.loadbalancer.healthcheck.interval=30s"
+      - "traefik.http.services.channelmarket-pma.loadbalancer.healthcheck.timeout=3s"
       - "traefik.docker.network=proxy"
     depends_on:
       db:
@@ -234,6 +272,11 @@ services:
       driver: "json-file"
       options:
         max-size: "10m"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: 256M
 
 networks:
   internal:
