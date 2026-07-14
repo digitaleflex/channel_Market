@@ -42,12 +42,23 @@ class BackupDatabase extends Command
 
         // On utilise mysqldump
         // Comme on est dans Docker, on se connecte à l'hôte 'db'
+        // --skip-ssl est portable (MySQL + MariaDB), contrairement à --ssl-mode
+        // Les identifiants sont passés via un fichier d'options temporaire
+        // pour éviter toute fuite du mot de passe dans `ps` ou les logs/emails.
+        $mysqlConfig = config('database.connections.mysql');
+
+        $optionsFile = tempnam(sys_get_temp_dir(), 'mysqldump_');
+        file_put_contents($optionsFile, implode("\n", [
+            '[mysqldump]',
+            'user='.$mysqlConfig['username'],
+            'password='.$mysqlConfig['password'],
+            'host='.$mysqlConfig['host'],
+        ]));
+
         $command = sprintf(
-            'mysqldump --ssl-mode=DISABLED --user=%s --password=%s --host=%s %s > %s',
-            config('database.connections.mysql.username'),
-            config('database.connections.mysql.password'),
-            config('database.connections.mysql.host'),
-            config('database.connections.mysql.database'),
+            'mysqldump --defaults-extra-file=%s --skip-ssl %s > %s',
+            escapeshellarg($optionsFile),
+            escapeshellarg($mysqlConfig['database']),
             escapeshellarg($filePath)
         );
 
@@ -55,6 +66,7 @@ class BackupDatabase extends Command
 
         try {
             $process->mustRun();
+            @unlink($optionsFile);
 
             $this->info("Sauvegarde terminée : $filename");
 
@@ -70,6 +82,7 @@ class BackupDatabase extends Command
             $this->cleanup();
 
         } catch (ProcessFailedException $exception) {
+            @unlink($optionsFile);
             $errorMsg = 'Échec de la sauvegarde : '.$exception->getMessage();
             $this->error($errorMsg);
 
