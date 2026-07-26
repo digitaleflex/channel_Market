@@ -35,6 +35,9 @@ services:
         limits:
           cpus: "0.5"
           memory: 512M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
     logging:
       driver: "json-file"
       options:
@@ -57,7 +60,7 @@ services:
         uid: ${UID:-1001}
     restart: unless-stopped
     working_dir: /var/www
-    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    command: php artisan queue:work --verbose --tries=3 --timeout=90 --sleep=3
     user: "${UID:-1001}:${GID:-1001}"
     volumes:
       - .:/var/www
@@ -78,12 +81,23 @@ services:
       retries: 3
       start_period: 10s
     depends_on:
-      - app
+      db:
+        condition: service_healthy
+      app:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           cpus: "0.3"
           memory: 256M
+        reservations:
+          cpus: "0.1"
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Scheduler
   scheduler:
@@ -100,6 +114,7 @@ services:
     volumes:
       - .:/var/www
       - app-storage:/var/www/storage
+      - app-logs:/var/www/storage/logs
     environment:
       - DB_HOST=db
       - DB_PORT=3306
@@ -116,12 +131,23 @@ services:
       retries: 3
       start_period: 10s
     depends_on:
-      - app
+      db:
+        condition: service_healthy
+      app:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           cpus: "0.2"
           memory: 128M
+        reservations:
+          cpus: "0.05"
+          memory: 32M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Nginx Web Server
   webserver:
@@ -144,12 +170,16 @@ services:
       - "traefik.http.services.channelmarket-web.loadbalancer.healthcheck.timeout=3s"
       - "traefik.docker.network=proxy"
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           cpus: "0.2"
           memory: 128M
+        reservations:
+          cpus: "0.05"
+          memory: 32M
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1 || exit 1"]
       interval: 30s
@@ -160,6 +190,7 @@ services:
       driver: "json-file"
       options:
         max-size: "10m"
+        max-file: "3"
 
   # Database
   db:
@@ -182,10 +213,14 @@ services:
         limits:
           cpus: "0.5"
           memory: 768M
+        reservations:
+          cpus: "0.1"
+          memory: 256M
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
+        max-file: "3"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
       interval: 10s
@@ -193,90 +228,33 @@ services:
       retries: 5
       start_period: 30s
 
-  # Email Testing (Mailpit)
-  mailpit:
-    image: axllent/mailpit:latest
-    restart: no
+  # Redis
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
     volumes:
-      - mailpit-data:/data
+      - redis-data:/data
     networks:
       - internal
-      - proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.channelmarket-mail.rule=Host(`mail.${APP_DOMAIN:-channelmarket.net}`)"
-      - "traefik.http.routers.channelmarket-mail.entrypoints=websecure"
-      - "traefik.http.routers.channelmarket-mail.tls.certresolver=letsencrypt"
-      - "traefik.http.services.channelmarket-mail.loadbalancer.server.port=8025"
-      - "traefik.http.routers.channelmarket-mail.middlewares=rate-limit-admin@file,circuit-breaker-api@file"
-      - "traefik.http.services.channelmarket-mail.loadbalancer.healthcheck.path=/"
-      - "traefik.http.services.channelmarket-mail.loadbalancer.healthcheck.interval=30s"
-      - "traefik.http.services.channelmarket-mail.loadbalancer.healthcheck.timeout=3s"
-      - "traefik.docker.network=proxy"
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8025 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
     deploy:
       resources:
         limits:
+          cpus: "0.3"
+          memory: 256M
+        reservations:
           cpus: "0.1"
-          memory: 128M
-
-  # Database Management
-  phpmyadmin:
-    image: phpmyadmin:latest
-    restart: no
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    cap_add:
-      - CAP_NET_BIND_SERVICE
-      - CAP_SETUID
-      - CAP_SETGID
-    read_only: true
-    tmpfs:
-      - /tmp
-      - /var/lib/php/sessions
-      - /run/apache2
-    environment:
-      - PMA_HOST=db
-      - PMA_PORT=3306
-      - ARBITRARY=1
-    networks:
-      - internal
-      - proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.channelmarket-pma.rule=Host(`db.${APP_DOMAIN:-channelmarket.net}`)"
-      - "traefik.http.routers.channelmarket-pma.entrypoints=websecure"
-      - "traefik.http.routers.channelmarket-pma.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.channelmarket-pma.middlewares=rate-limit-admin@file,circuit-breaker-api@file"
-      - "traefik.http.services.channelmarket-pma.loadbalancer.healthcheck.path=/"
-      - "traefik.http.services.channelmarket-pma.loadbalancer.healthcheck.interval=30s"
-      - "traefik.http.services.channelmarket-pma.loadbalancer.healthcheck.timeout=3s"
-      - "traefik.docker.network=proxy"
-    depends_on:
-      db:
-        condition: service_healthy
+          memory: 64M
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
       retries: 3
       start_period: 10s
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
-    deploy:
-      resources:
-        limits:
-          cpus: "0.2"
-          memory: 256M
+        max-file: "3"
 
 networks:
   internal:
@@ -291,5 +269,6 @@ volumes:
     driver: local
   app-logs:
     driver: local
-  mailpit-data:
+  redis-data:
     driver: local
+
