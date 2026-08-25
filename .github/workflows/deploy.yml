@@ -101,7 +101,7 @@ jobs:
         username: ${{ secrets.VPS_USERNAME }}
         key: ${{ secrets.VPS_SSH_KEY }}
         port: ${{ secrets.VPS_SSH_PORT || 22 }}
-        timeout: 120s
+        command_timeout: 30m
         script: |
           mkdir -p ${{ secrets.VPS_PATH }}
           cd ${{ secrets.VPS_PATH }}
