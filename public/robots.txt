@@ -8,4 +8,4 @@ Disallow: /payment/
 Disallow: /download/
 
 # Sitemap
-Sitemap: https://channelmarket.net/sitemap.xml
+Sitemap: https://allbooks.store/sitemap.xml

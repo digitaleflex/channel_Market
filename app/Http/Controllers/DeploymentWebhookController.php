@@ -13,10 +13,10 @@ class DeploymentWebhookController extends Controller
      */
     public function handle(Request $request)
     {
-        $token = $request->header('X-Deploy-Token') ?? $request->query('token');
-        $expectedToken = env('DEPLOY_WEBHOOK_TOKEN', 'default-secure-deploy-token-123');
+        $token = (string) ($request->header('X-Deploy-Token') ?? $request->query('token', ''));
+        $expectedToken = (string) config('services.deploy.token', '');
 
-        if ($token !== $expectedToken) {
+        if ($expectedToken === '' || ! hash_equals($expectedToken, $token)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 

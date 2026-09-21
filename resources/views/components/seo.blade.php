@@ -1,17 +1,17 @@
 @props([
     'title'       => null,
-    'description' => 'Découvrez nos produits digitaux exclusifs sur Channel Market. PDF, vidéos, musiques, formations — qualité premium et téléchargement immédiat.',
+    'description' => 'Découvrez notre librairie digitale All_Books. Des livres numériques d\'exception, e-books, guides et audiobooks en téléchargement immédiat.',
     'image'       => asset('img/logo.jpg'),
     'url'         => url()->current(),
     'type'        => 'website',
-    'keywords'    => 'produits digitaux, marketplace, téléchargement, PDF, formations, Channel Market',
+    'keywords'    => 'livres numériques, ebooks, All_Books, librairie en ligne, PDF, epub, audiobooks, lecture, guides pratiques, livres audio',
     'robots'      => 'index, follow',
 ])
 
 @php
-    $siteName = config('app.name', 'Channel Market');
-    $fullTitle = $title ? $title . ' — ' . $siteName : $siteName . ' | Marketplace de Produits Numériques';
-    $siteUrl   = config('app.url', 'https://channelmarket.net');
+    $siteName = config('app.name', 'All_Books');
+    $fullTitle = $title ? $title . ' — ' . $siteName : $siteName . ' | Librairie Digitale & E-books d\'Excellence';
+    $siteUrl   = config('app.url', 'https://allbooks.store');
 @endphp
 
 {{-- Primary Meta Tags --}}
@@ -37,7 +37,7 @@
 
 {{-- Twitter Card --}}
 <meta name="twitter:card"        content="summary_large_image">
-<meta name="twitter:site"        content="@@channelmarket">
+<meta name="twitter:site"        content="@allbooks">
 <meta name="twitter:url"         content="{{ $url }}">
 <meta name="twitter:title"       content="{{ $fullTitle }}">
 <meta name="twitter:description" content="{{ $description }}">

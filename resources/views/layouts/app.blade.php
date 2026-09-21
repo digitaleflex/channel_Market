@@ -46,11 +46,11 @@
                     <!-- Mobile Top Header Bar -->
                     <header class="lg:hidden h-20 bg-white/80 backdrop-blur-xl border-b border-amber-900/5 sticky top-0 z-40 flex items-center justify-between px-6 shadow-sm shadow-amber-900/5">
                         <a href="{{ route('admin.products.index') }}" class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center text-white font-black text-lg">
-                                C
+                            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-md">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                             </div>
                             <div>
-                                <span class="font-black text-slate-900 text-sm tracking-tight font-display">Channel Market</span>
+                                <span class="font-black text-slate-900 text-sm tracking-tight font-display">All_Books</span>
                                 <span class="block text-[8px] font-bold text-amber-600 uppercase tracking-widest -mt-0.5">Admin</span>
                             </div>
                         </a>
@@ -77,11 +77,11 @@
                         <div class="h-24 flex items-center border-b border-amber-900/5 transition-all duration-300"
                              :class="sidebarCollapsed ? 'px-6 justify-center' : 'px-8 gap-3'">
                             <a href="{{ route('admin.products.index') }}" class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30 text-white font-black text-2xl font-display flex-shrink-0">
-                                    C
+                                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30 text-white flex-shrink-0">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                                 </div>
                                 <div x-show="!sidebarCollapsed" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="truncate">
-                                    <span class="font-black text-slate-900 text-lg tracking-tight font-display">Channel Market</span>
+                                    <span class="font-black text-slate-900 text-lg tracking-tight font-display">All_Books</span>
                                     <span class="block text-[10px] font-bold text-amber-600 uppercase tracking-widest -mt-1">Administration</span>
                                 </div>
                             </a>
@@ -90,14 +90,14 @@
                         <!-- Sidebar Navigation Menu Links -->
                         <nav class="flex-1 py-8 space-y-1.5 overflow-y-auto transition-all duration-300"
                              :class="sidebarCollapsed ? 'px-3' : 'px-5'">
-                            <!-- Catalogue Produits -->
+                            <!-- Catalogue Livres -->
                             <a href="{{ route('admin.products.index') }}" 
-                               title="Catalogue Produits"
+                               title="Catalogue Livres"
                                class="nav-sidebar-link transition-all duration-300"
                                :class="sidebarCollapsed ? 'justify-center px-4' : 'px-5 gap-4 {{ request()->routeIs('admin.products.*') ? 'active' : '' }}'"
                                class="{{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
-                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                                <span x-show="!sidebarCollapsed" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="truncate">Catalogue Produits</span>
+                                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                                <span x-show="!sidebarCollapsed" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="truncate">Catalogue Livres</span>
                             </a>
 
                             <!-- Commandes & Ventes -->

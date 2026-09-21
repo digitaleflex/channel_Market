@@ -37,7 +37,7 @@ class ActivityController extends Controller
         $githubStatus = null;
         try {
             $response = Http::withHeaders([
-                'User-Agent' => 'Channel-Market-App',
+                'User-Agent' => 'All-Books-App',
             ])->timeout(3)->get('https://api.github.com/repos/digitaleflex/channel_Market/actions/runs');
 
             if ($response->successful()) {

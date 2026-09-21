@@ -2,7 +2,7 @@
     <div class="mb-8">
         <h2 class="text-3xl font-black text-slate-900 tracking-tight mb-2">Réinitialisation</h2>
         <p class="text-slate-600 font-medium leading-relaxed">
-            Choisissez votre nouveau mot de passe sécurisé pour votre compte Chanel Market.
+            Choisissez votre nouveau mot de passe sécurisé pour votre compte All_Books.
         </p>
     </div>
 

@@ -10,7 +10,7 @@ RUN npm run build
 FROM php:8.3-fpm AS runtime
 
 # Arguments for user management
-ARG user=channelmarket
+ARG user=allbooks
 ARG uid=1001
 
 # Install system dependencies

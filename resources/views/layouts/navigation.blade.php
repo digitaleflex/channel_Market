@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-100/50">
+<nav x-data="{ open: false }" class="sticky top-0 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200/80">
     <!-- Primary Navigation Menu -->
     <div class="container-app">
         <div class="flex justify-between h-20">
@@ -6,11 +6,15 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <div class="w-10 h-10 rounded-xl bg-[#F7F8FA] border border-slate-200 flex items-center justify-center shadow-sm group-hover:scale-105 transition-all duration-300">
+                            <!-- Noguchi Split Duotone Circle -->
+                            <div class="w-5 h-5 rounded-full overflow-hidden flex border border-[#ffcd00]/40">
+                                <div class="w-1/2 h-full bg-[#192230]"></div>
+                                <div class="w-1/2 h-full bg-[#ffcd00]"></div>
+                            </div>
                         </div>
-                        <span class="hidden sm:block text-xl font-black tracking-tighter gradient-text">
-                            Chanel Market
+                        <span class="hidden sm:block text-xl font-black tracking-tight text-[#192230] font-display">
+                            All_Books<span class="text-[#ffcd00]">.</span>
                         </span>
                     </a>
                 </div>
@@ -18,16 +22,16 @@
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.index')" class="text-sm font-bold">
-                        {{ __('Boutique') }}
+                        {{ __('Catalogue') }}
                     </x-nav-link>
 
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-sm font-bold">
-                        {{ __('Mes Achats') }}
+                        {{ __('Ma Bibliothèque') }}
                     </x-nav-link>
 
                     @if(Auth::user()->is_admin)
                         <x-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*')" class="text-sm font-bold">
-                            {{ __('Gestion Produits') }}
+                            {{ __('Gestion Livres') }}
                         </x-nav-link>
                         <x-nav-link :href="route('admin.orders.index')" :active="request()->routeIs('admin.orders.*')" class="text-sm font-bold">
                             {{ __('Commandes') }}
@@ -49,9 +53,9 @@
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center gap-3 px-3 py-2 text-sm font-bold rounded-xl text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-100 transition-all duration-300 active:scale-95">
+                        <button class="inline-flex items-center gap-3 px-3 py-2 text-sm font-bold rounded-xl text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all duration-300 active:scale-95">
                             <div class="hidden lg:block">{{ Auth::user()->name }}</div>
-                            <div class="w-8 h-8 rounded-lg bg-amber-600 text-white flex items-center justify-center text-xs font-black shadow-md shadow-amber-200">
+                            <div class="w-8 h-8 rounded-lg bg-[#ffcd00] text-[#192230] flex items-center justify-center text-xs font-black shadow-sm">
                                 {{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                             </div>
                             <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -93,16 +97,16 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden border-t border-slate-100 bg-white">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.index')" class="font-bold">
-                {{ __('Boutique') }}
+                {{ __('Catalogue') }}
             </x-responsive-nav-link>
 
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="font-bold">
-                {{ __('Mes Achats') }}
+                {{ __('Ma Bibliothèque') }}
             </x-responsive-nav-link>
 
             @if(Auth::user()->is_admin)
                 <x-responsive-nav-link :href="route('admin.products.index')" :active="request()->routeIs('admin.products.*')" class="font-bold">
-                    {{ __('Gestion Produits') }}
+                    {{ __('Gestion Livres') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('admin.orders.index')" :active="request()->routeIs('admin.orders.*')" class="font-bold">
                     {{ __('Gestion Commandes') }}
@@ -122,7 +126,7 @@
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-slate-100">
             <div class="px-4 flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-600 text-white flex items-center justify-center font-black">
+                <div class="w-10 h-10 rounded-xl bg-[#ffcd00] text-[#192230] flex items-center justify-center font-black shadow-sm">
                     {{ mb_strtoupper(mb_substr(Auth::user()->name, 0, 1)) }}
                 </div>
                 <div>

@@ -32,24 +32,24 @@
             <h2 class="text-3xl font-extrabold text-gray-900 mb-2 font-['Outfit']">Finaliser votre achat</h2>
             <p class="text-gray-500 mb-10">Vous êtes sur le point d'acquérir "{{ $product->title }}"</p>
 
-            <div class="bg-gray-50 border border-gray-100 rounded-2xl p-6 mb-10 inline-block text-left w-full max-w-sm">
+            <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-6 mb-10 inline-block text-left w-full max-w-sm shadow-sm">
                 <div class="flex justify-between items-center mb-4">
-                    <span class="text-gray-600 font-medium">Prix unitaire</span>
-                    <span class="text-gray-900 font-bold">{{ number_format($product->price, $product->currency === 'XOF' ? 0 : 2, ',', ' ') }} {{ $product->currency === 'XOF' ? 'CFA' : $product->currency }}</span>
+                    <span class="text-[#3d474e] font-medium text-sm">Prix de l'ouvrage</span>
+                    <span class="text-[#192230] font-bold">{{ number_format($product->price, $product->currency === 'XOF' ? 0 : 2, ',', ' ') }} {{ $product->currency === 'XOF' ? 'CFA' : $product->currency }}</span>
                 </div>
                 <div class="flex justify-between items-center mb-4">
-                    <span class="text-gray-600 font-medium">Frais de traitement</span>
-                    <span class="text-green-600 font-bold">0,00 {{ $product->currency === 'XOF' ? 'CFA' : $product->currency }}</span>
+                    <span class="text-[#3d474e] font-medium text-sm">Frais de livraison numérique</span>
+                    <span class="text-emerald-700 font-black text-xs uppercase tracking-wider">Gratuit (0 CFA)</span>
                 </div>
-                <div class="w-full h-px bg-gray-200 mb-4"></div>
+                <div class="w-full h-px bg-slate-200 mb-4"></div>
                 <div class="flex justify-between items-center">
-                    <span class="text-gray-900 font-bold text-lg">Total à payer</span>
-                    <span class="text-amber-600 font-black text-2xl">{{ number_format($product->price, $product->currency === 'XOF' ? 0 : 2, '', '') }} {{ $product->currency === 'XOF' ? 'CFA' : $product->currency }}</span>
+                    <span class="text-[#192230] font-black text-base font-display">Total à régler</span>
+                    <span class="text-[#192230] bg-[#ffcd00] px-3 py-1 rounded-xl font-black text-xl">{{ number_format($product->price, $product->currency === 'XOF' ? 0 : 2, ',', ' ') }} {{ $product->currency === 'XOF' ? 'CFA' : $product->currency }}</span>
                 </div>
             </div>
 
             @if(session('error'))
-                <div class="max-w-xl mx-auto mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700 text-sm text-left">
+                <div class="max-w-xl mx-auto mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-red-700 text-sm text-left font-medium">
                     {{ session('error') }}
                 </div>
             @endif
@@ -59,17 +59,17 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Prénom</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-[#3d474e] mb-1.5">Prénom</label>
                         <input name="first_name" value="{{ old('first_name') }}" required
-                               class="w-full rounded-xl border-gray-200 focus:border-amber-500 focus:ring-amber-500" />
+                               class="w-full rounded-xl border-slate-200 focus:border-[#ffcd00] focus:ring-4 focus:ring-[#ffcd00]/20 text-sm" />
                         @error('first_name')
                             <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Nom</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-[#3d474e] mb-1.5">Nom</label>
                         <input name="last_name" value="{{ old('last_name') }}" required
-                               class="w-full rounded-xl border-gray-200 focus:border-amber-500 focus:ring-amber-500" />
+                               class="w-full rounded-xl border-slate-200 focus:border-[#ffcd00] focus:ring-4 focus:ring-[#ffcd00]/20 text-sm" />
                         @error('last_name')
                             <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                         @enderror
@@ -77,39 +77,40 @@
                 </div>
 
                 <div class="mt-4">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3d474e] mb-1.5">Adresse Email</label>
                     <input type="email" name="email" value="{{ old('email') }}" required
-                           class="w-full rounded-xl border-gray-200 focus:border-amber-500 focus:ring-amber-500" />
+                           class="w-full rounded-xl border-slate-200 focus:border-[#ffcd00] focus:ring-4 focus:ring-[#ffcd00]/20 text-sm" />
                     @error('email')
                         <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div class="mt-4">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Pays</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3d474e] mb-1.5">Pays de résidence</label>
                     <input id="country_search" type="search" autocomplete="off"
-                           placeholder="Rechercher un pays, ex. France, Nigeria, Canada"
-                           class="w-full rounded-xl border-gray-200 focus:border-amber-500 focus:ring-amber-500 mb-3"
+                           placeholder="Rechercher un pays (ex: Bénin, Côte d'Ivoire, France...)"
+                           class="w-full rounded-xl border-slate-200 focus:border-[#ffcd00] focus:ring-4 focus:ring-[#ffcd00]/20 mb-2 text-sm"
                            aria-label="Recherche de pays" />
-                    <select id="country_code_selector" class="w-full rounded-xl border-gray-200 bg-white focus:border-amber-500 focus:ring-amber-500" aria-label="Pays">
+                    <select id="country_code_selector" class="w-full rounded-xl border-slate-200 bg-white focus:border-[#ffcd00] focus:ring-4 focus:ring-[#ffcd00]/20 text-sm" aria-label="Pays">
                     </select>
                 </div>
 
                 <div class="mt-4">
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Numéro WhatsApp (Obligatoire)</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-[#3d474e] mb-1.5">Numéro WhatsApp ou Téléphone (Obligatoire)</label>
                     <input id="phone_input" type="tel" name="phone" value="{{ old('phone', '+229 ') }}" required placeholder="Ex: +229 01020304"
                            pattern="^\+[0-9 ]{6,25}$"
-                           class="w-full rounded-xl border-gray-200 focus:border-amber-500 focus:ring-amber-500" />
-                    <p class="text-xs text-gray-400 mt-2">Format international requis : commencez par <strong>+</strong> puis indicatif pays et numéro local.</p>
+                           class="w-full rounded-xl border-slate-200 focus:border-[#ffcd00] focus:ring-4 focus:ring-[#ffcd00]/20 text-sm" />
+                    <p class="text-[11px] text-slate-400 mt-1.5">Format international requis : commencez par <strong>+</strong> suivi de l'indicatif pays.</p>
                     @error('phone')
                         <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div class="mt-6">
+                <div class="mt-8">
                     <button type="submit"
-                            class="inline-flex items-center justify-center w-full px-6 py-3 bg-amber-600 text-white font-semibold rounded-2xl hover:bg-amber-700 transition shadow-md hover:shadow-lg">
-                        Payer
+                            class="btn-premium-primary w-full !py-4 text-sm justify-center font-black">
+                        <span>Procéder au règlement sécurisé</span>
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </button>
                 </div>
             </form>

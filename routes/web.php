@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\DeploymentWebhookController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
@@ -30,6 +32,7 @@ Route::get('/sitemap.xml', function () {
 // Public routes
 Route::get('/', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/product/{product}/sample', [ProductController::class, 'sample'])->name('products.sample');
 
 // Checkout & Payment (Public - No login required)
 Route::get('/checkout/{product}', [PaymentController::class, 'checkout'])->name('checkout');
@@ -64,6 +67,11 @@ Route::post('/payment/chariow/webhook', [PaymentController::class, 'chariowWebho
     ->name('payment.chariow.webhook')
     ->withoutMiddleware([VerifyCsrfToken::class]);
 
+// Deployment webhook (from GitHub Actions)
+Route::post('/webhook/deploy', [DeploymentWebhookController::class, 'handle'])
+    ->name('webhook.deploy')
+    ->withoutMiddleware([VerifyCsrfToken::class]);
+
 // Payment success page (public fallback)
 Route::get('/payment/success/{order}', [PaymentController::class, 'success'])->name('payment.success');
 
@@ -85,6 +93,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    // Activity & Workflows Monitoring
+    Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
+    Route::get('/workflows', [ActivityController::class, 'workflows'])->name('workflows.index');
+    Route::post('/workflows/backup', [ActivityController::class, 'runBackup'])->name('workflows.run-backup');
+    Route::post('/workflows/monitor', [ActivityController::class, 'runMonitor'])->name('workflows.run-monitor');
 });
 
 require __DIR__.'/auth.php';

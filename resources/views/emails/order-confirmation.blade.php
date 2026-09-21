@@ -1,28 +1,32 @@
 <x-mail::message>
-# Merci pour votre achat !
+# Votre livre numérique est prêt !
 
-Bonjour {{ $order->client_name ?? 'Client(e)' }},
+Bonjour {{ $order->client_name ?? 'Lecteur / Lectrice' }},
 
-Nous vous confirmons que votre paiement a été validé avec succès. Merci pour votre confiance !
+Nous vous confirmons que votre commande sur **{{ config('app.name') }}** a été validée avec succès. Bonne lecture !
 
-**Produit :** {{ $order->product->title }}
-**Montant payé :** {{ number_format($order->amount, $order->product->currency === 'XOF' ? 0 : 2, ',', ' ') }} {{ $order->product->currency === 'XOF' ? 'CFA' : $order->product->currency }}
+**Livre :** {{ $order->product->title }}
+@if($order->product->author)
+**Auteur :** {{ $order->product->author }}
+@endif
+**Format :** {{ $order->product->format ?? 'PDF' }}
+**Montant réglé :** {{ number_format($order->amount, $order->product->currency === 'XOF' ? 0 : 2, ',', ' ') }} {{ $order->product->currency === 'XOF' ? 'CFA' : $order->product->currency }}
 **Numéro de commande :** #{{ $order->id }}
 
 @if($order->user_id)
-Vous pouvez accéder à votre produit directement depuis votre tableau de bord.
+Vous pouvez retrouver votre livre à tout moment dans votre bibliothèque numérique personnelle.
 <x-mail::button :url="url('/dashboard')">
-Accéder à mon espace
+Accéder à Ma Bibliothèque
 </x-mail::button>
 @else
-Vous pouvez télécharger votre produit en utilisant le bouton ci-dessous. Veuillez conserver cet e-mail, il contient votre lien d'accès unique.
+Vous pouvez télécharger votre livre numérique immédiatement via le bouton sécurisé ci-dessous. Veuillez conserver cet e-mail pour vos futurs téléchargements.
 <x-mail::button :url="route('payment.success', $order)">
-Télécharger mon produit
+Télécharger mon livre ({{ $order->product->format ?? 'PDF' }})
 </x-mail::button>
 @endif
 
-Si vous avez la moindre question, n'hésitez pas à nous contacter.
+Pour toute question ou assistance de lecture, répondez simplement à cet e-mail.
 
-Cordialement,
-L'équipe {{ config('app.name') }}
+Excellente lecture,  
+L'équipe **{{ config('app.name') }}**
 </x-mail::message>

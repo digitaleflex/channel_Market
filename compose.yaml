@@ -1,4 +1,4 @@
-name: channel-market
+name: all-books
 
 services:
   # PHP Application
@@ -8,7 +8,7 @@ services:
       dockerfile: docker/php/Dockerfile
       target: runtime
       args:
-        user: channelmarket
+        user: allbooks
         uid: ${UID:-1001}
     restart: unless-stopped
     working_dir: /var/www
@@ -21,8 +21,8 @@ services:
       - DB_HOST=db
       - DB_PORT=3306
       - DB_CONNECTION=mysql
-      - DB_DATABASE=${DB_DATABASE:-channel_market_prod}
-      - DB_USERNAME=${DB_USERNAME:-cm_db_user}
+      - DB_DATABASE=${DB_DATABASE:-allbooks_prod}
+      - DB_USERNAME=${DB_USERNAME:-allbooks_user}
       - DB_PASSWORD=${DB_PASSWORD}
       - RUN_MIGRATIONS=true
     networks:
@@ -65,8 +65,8 @@ services:
       - DB_HOST=db
       - DB_PORT=3306
       - DB_CONNECTION=mysql
-      - DB_DATABASE=${DB_DATABASE:-channel_market_prod}
-      - DB_USERNAME=${DB_USERNAME:-cm_db_user}
+      - DB_DATABASE=${DB_DATABASE:-allbooks_prod}
+      - DB_USERNAME=${DB_USERNAME:-allbooks_user}
       - DB_PASSWORD=${DB_PASSWORD}
     networks:
       - internal
@@ -98,8 +98,8 @@ services:
       - DB_HOST=db
       - DB_PORT=3306
       - DB_CONNECTION=mysql
-      - DB_DATABASE=${DB_DATABASE:-channel_market_prod}
-      - DB_USERNAME=${DB_USERNAME:-cm_db_user}
+      - DB_DATABASE=${DB_DATABASE:-allbooks_prod}
+      - DB_USERNAME=${DB_USERNAME:-allbooks_user}
       - DB_PASSWORD=${DB_PASSWORD}
     networks:
       - internal
@@ -125,9 +125,9 @@ services:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.channelmarket-web.rule=Host(`${APP_DOMAIN:-channelmarket.net}`)"
-      - "traefik.http.routers.channelmarket-web.entrypoints=websecure"
-      - "traefik.http.routers.channelmarket-web.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.allbooks-web.rule=Host(`${APP_DOMAIN:-allbooks.store}`)"
+      - "traefik.http.routers.allbooks-web.entrypoints=websecure"
+      - "traefik.http.routers.allbooks-web.tls.certresolver=letsencrypt"
       - "traefik.docker.network=proxy"
     depends_on:
       - app
@@ -151,10 +151,10 @@ services:
     image: mysql:8.0
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-channel_market_prod}
+      MYSQL_DATABASE: ${DB_DATABASE:-allbooks_prod}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USERNAME:-cm_db_user}
+      MYSQL_USER: ${DB_USERNAME:-allbooks_user}
     volumes:
       - dbdata:/var/lib/mysql
     networks:
@@ -188,10 +188,10 @@ services:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.channelmarket-mail.rule=Host(`mail.${APP_DOMAIN:-channelmarket.net}`)"
-      - "traefik.http.routers.channelmarket-mail.entrypoints=websecure"
-      - "traefik.http.routers.channelmarket-mail.tls.certresolver=letsencrypt"
-      - "traefik.http.services.channelmarket-mail.loadbalancer.server.port=8025"
+      - "traefik.http.routers.allbooks-mail.rule=Host(`mail.${APP_DOMAIN:-allbooks.store}`)"
+      - "traefik.http.routers.allbooks-mail.entrypoints=websecure"
+      - "traefik.http.routers.allbooks-mail.tls.certresolver=letsencrypt"
+      - "traefik.http.services.allbooks-mail.loadbalancer.server.port=8025"
       - "traefik.docker.network=proxy"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8025 || exit 1"]
@@ -217,9 +217,9 @@ services:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.channelmarket-pma.rule=Host(`db.${APP_DOMAIN:-channelmarket.net}`)"
-      - "traefik.http.routers.channelmarket-pma.entrypoints=websecure"
-      - "traefik.http.routers.channelmarket-pma.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.allbooks-pma.rule=Host(`db.${APP_DOMAIN:-allbooks.store}`)"
+      - "traefik.http.routers.allbooks-pma.entrypoints=websecure"
+      - "traefik.http.routers.allbooks-pma.tls.certresolver=letsencrypt"
       - "traefik.docker.network=proxy"
     depends_on:
       db:
