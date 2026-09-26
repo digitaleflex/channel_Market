@@ -24,10 +24,20 @@ return [
             'files' => [
                 /*
                  * The list of directories and files that will be included in the backup.
+                 *
+                 * Liste explicite : ne pas utiliser base_path() ici. Inclure toute
+                 * la racine embarquait .git/, les logs et les sauvegardes des
+                 * autres systèmes (stockage x3 et croissance quotidienne).
                  */
                 'include' => [
-                    base_path(),
-                    // storage_path(),  // Include if you use zero downtime deployments and don't follow symlinks
+                    base_path('app'),
+                    base_path('config'),
+                    base_path('database'),
+                    base_path('public'),
+                    base_path('resources'),
+                    base_path('routes'),
+                    base_path('storage/app/public'),
+                    base_path('storage/app/private/digital_products'),
                 ],
 
                 /*
@@ -38,7 +48,10 @@ return [
                 'exclude' => [
                     base_path('vendor'),
                     base_path('node_modules'),
+                    base_path('tests'),
+                    base_path('.git'),
                     storage_path('framework'),
+                    storage_path('logs'),
                 ],
 
                 /*

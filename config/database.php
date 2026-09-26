@@ -63,7 +63,14 @@ return [
                 (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
             'dump' => [
-                'add_extra_option' => '--ssl=0',
+                // Le client mysqldump des conteneurs est MariaDB (10.x) : il ne
+                // supporte pas --ssl-mode (réservé à MySQL 8.4+) mais accepte
+                // --skip-ssl. Sans cela, `backup:run` échoue et envoie une
+                // alerte email quotidienne.
+                // skip_ssl active l'option ; ssl_flag force --skip-ssl
+                // (défaut db-dumper : --ssl-mode=DISABLED, incompatible).
+                'skip_ssl' => true,
+                'ssl_flag' => 'skip-ssl',
             ],
         ],
 
