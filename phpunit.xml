@@ -18,19 +18,29 @@
         </include>
     </source>
     <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="APP_URL" value="http://localhost"/>
-        <env name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <!--
+            CRITIQUE : sans ceci, le config cache de production
+            (bootstrap/cache/config.php) est chargé et IGNORE les <env> ci-dessous.
+            Les tests tournaient alors contre la base de PRODUCTION (MySQL),
+            le cache Redis et le mailer Resend réel.
+            APP_CONFIG_CACHE pointe vers un fichier inexistant = pas de cache.
+        -->
+        <env name="APP_CONFIG_CACHE" value="/tmp/phpunit-no-config-cache.php"/>
+        <!-- force="true" : sans cela, ces valeurs sont ignorées si la variable
+             existe déjà (chargée depuis le .env de production par l'artisan). -->
+        <env name="APP_ENV" value="testing" force="true"/>
+        <env name="APP_URL" value="http://localhost" force="true"/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file" force="true"/>
         <env name="APP_KEY" value="base64:fH7+X6mP1y9uY0r2v9cbYfyhe3VA/bdyJFI8rAg76NI="/>
-        <env name="BCRYPT_ROUNDS" value="4"/>
-        <env name="BROADCAST_CONNECTION" value="null"/>
-        <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
-        <env name="MAIL_MAILER" value="array"/>
-        <env name="QUEUE_CONNECTION" value="sync"/>
-        <env name="SESSION_DRIVER" value="file"/>
-        <env name="PULSE_ENABLED" value="false"/>
+        <env name="BCRYPT_ROUNDS" value="4" force="true"/>
+        <env name="BROADCAST_CONNECTION" value="null" force="true"/>
+        <env name="CACHE_STORE" value="array" force="true"/>
+        <env name="DB_CONNECTION" value="sqlite" force="true"/>
+        <env name="DB_DATABASE" value=":memory:" force="true"/>
+        <env name="MAIL_MAILER" value="array" force="true"/>
+        <env name="QUEUE_CONNECTION" value="sync" force="true"/>
+        <env name="SESSION_DRIVER" value="file" force="true"/>
+        <env name="PULSE_ENABLED" value="false" force="true"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
         <env name="VITE_MANIFEST_SKIP" value="true"/>
