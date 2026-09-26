@@ -62,13 +62,14 @@ class ActivityController extends Controller
             // Ignore API exceptions
         }
 
-        // 3. Scan local backups
+        // 3. Scan local backups (Spatie laravel-backup)
         $backupFiles = [];
         try {
-            $backupDir = storage_path('app/backup');
+            $backupDir = storage_path('app/private/channel-market-backup');
             if (file_exists($backupDir)) {
                 $files = glob($backupDir.'/*.zip');
-                foreach ($files as $file) {
+                rsort($files);
+                foreach (array_slice($files, 0, 10) as $file) {
                     $backupFiles[] = [
                         'name' => basename($file),
                         'size' => round(filesize($file) / 1024 / 1024, 2).' MB',

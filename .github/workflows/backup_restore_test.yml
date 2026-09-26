@@ -24,10 +24,10 @@ jobs:
         script: |
           cd ${{ secrets.VPS_PATH }}
 
-          echo "Recherche du dernier backup..."
-          LATEST_BACKUP=$(ls -t backups/db_backup_*.sql.gz 2>/dev/null | head -1)
+          echo "Recherche du dernier backup (Spatie laravel-backup)..."
+          LATEST_BACKUP=$(ls -t storage/app/private/channel-market-backup/*.zip 2>/dev/null | head -1)
           if [ -z "$LATEST_BACKUP" ]; then
-            echo "ERREUR : Aucun backup trouvé dans backups/"
+            echo "ERREUR : Aucun backup trouvé dans storage/app/private/channel-market-backup/"
             exit 1
           fi
           echo "Backup à tester : $LATEST_BACKUP"
@@ -36,9 +36,16 @@ jobs:
           DB_PASSWORD=$(grep DB_PASSWORD .env | cut -d '=' -f2)
           DB_NAME=$(grep DB_DATABASE .env | cut -d '=' -f2 | tr -d '\r')
 
-          echo "Décompression du backup..."
-          cp "$LATEST_BACKUP" /tmp/test_backup.sql.gz
-          gunzip -f /tmp/test_backup.sql.gz
+          echo "Extraction du dump SQL depuis l'archive..."
+          DUMP_ENTRY=$(unzip -Z1 "$LATEST_BACKUP" | grep '^db-dumps/.*\.sql$' | head -1)
+          if [ -z "$DUMP_ENTRY" ]; then
+            echo "🚨 ERREUR : Aucun dump SQL dans l'archive $LATEST_BACKUP"
+            exit 1
+          fi
+          echo "Dump : $DUMP_ENTRY"
+          unzip -p "$LATEST_BACKUP" "$DUMP_ENTRY" > /tmp/test_backup.sql
+          DUMP_SIZE=$(du -h /tmp/test_backup.sql | cut -f1)
+          echo "Dump extrait : $DUMP_SIZE"
 
           echo "Démarrage d'un conteneur MySQL de test..."
           docker run -d --name db_restore_test \

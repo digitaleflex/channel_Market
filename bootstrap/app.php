@@ -26,9 +26,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withSchedule(function (Schedule $schedule) {
-        $schedule->command('backup:clean')->dailyAt('01:00');
+        // Backup unique : Spatie laravel-backup (dump SQL + fichiers)
+        // → local + Backblaze B2 (off-site). Les alertes d'échec sont
+        // envoyées par BackupHasFailedNotification.
         $schedule->command('backup:run')->dailyAt('02:00');
-        $schedule->command('db:backup')->dailyAt('00:00');
+        $schedule->command('backup:clean')->dailyAt('03:00');
         $schedule->command('system:monitor')->hourly();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
